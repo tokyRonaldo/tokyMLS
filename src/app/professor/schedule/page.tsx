@@ -69,9 +69,11 @@ export default function InstructorSchedule() {
   const [heureFinSchedule, setHeureFinSchedule] = useState<string | null>(null);
   const [lienSchedule, setLienSchedule] = useState<string | null>(null);
   const [descriptionSchedule, setDescriptionSchedule] = useState<string | null>(null);
+  const [listSchedule, setListSchedule] = useState<any[] | null>(null);
 
-  const user= localStorage.getItem('user');
+  let user= localStorage.getItem('user');
   console.log(user)
+  console.log('tessssssssssssssss')
   const formateur= JSON.parse(user);
 
 
@@ -222,7 +224,13 @@ export default function InstructorSchedule() {
           'Content-Type': 'application/json',
         }
       });
-      console.log(response);
+      if(!response.ok){
+        console.error('error')
+        return;
+      }
+      let result = await response.json();
+      console.log(result);
+      setListSchedule(result);
   }
 
   useEffect(()=>{
@@ -456,7 +464,7 @@ export default function InstructorSchedule() {
                           const isCurrentMonthDay = isCurrentMonth(date);
                           const isTodayDate = isToday(date);
 
-                          const dayConferences = videoConferences.filter((conf) => isSameDay(conf.date, date))
+                          const dayConferences = listSchedule?.filter((conf) => isSameDay(new Date(conf.dateDebut), date))
 
                           return (
                             <div
@@ -473,7 +481,7 @@ export default function InstructorSchedule() {
 
                               {/* Visioconférences du jour */}
                               <div className="space-y-1">
-                                {dayConferences.map((conference) => (
+                                {dayConferences?.map((conference) => (
                                   <div
                                     key={conference.id}
                                     onClick={() => window.open(conference.link, "_blank")}
@@ -485,7 +493,7 @@ export default function InstructorSchedule() {
                                     </div>
                                     <div className="text-emerald-600 flex items-center gap-1">
                                       <Clock className="h-3 w-3" />
-                                      <span>{conference.startTime}</span>
+                                      <span>{format(new Date(conference.dateDebut), "HH:mm")}</span>
                                     </div>
                                     <div className="text-emerald-700 text-xs mt-1 group-hover:underline">
                                       Cliquer pour rejoindre

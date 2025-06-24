@@ -67,9 +67,17 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
 
   apiRoute.get(async (req, res) => {
     const formateur_id= req.query.formateur_id;
+    console.log('tessssssssssss');
     console.log(formateur_id);
     try{
-      const response=  await prisma.cours.findMany();
+      const response=  await prisma.visioSession.findMany({
+        where: {
+          formateurId: Number(formateur_id), // ou une variable comme id: myId
+        },
+        include: {
+          cours: true,
+        },
+      });
       return res.status(200).json(response);
   
     }catch(e){

@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(150)
+  password  String   @db.VarChar(255)
+  role      Role     @default(etudiant)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  cours                    Cours[] // <- Un utilisateur a plusieurs cours (relation 1:N)
+  userLessons              UserLesson[]
+  quizResults              QuizResult[]
+  suivis                   SuivreCours[]
+  participations           ParticipationVisio[] @relation("UserParticipation")
+  visiosEnTantQueFormateur VisioSession[]       @relation("FormateurRelation")
+}
+
+model Cours {
+  id          Int      @id @default(autoincrement())
+  nom         String   @db.VarChar(255)
+  sousTitre   String   @db.VarChar(255)
+  description String?
+  level       String?  @db.VarChar(50)
+  content     String?
+  image       String?  @db.VarChar(255)
+  video       String?  @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  userId      Int
+  categoryId  Int?
+
+  user     User           @relation(fields: [userId], references: [id])
+  lessons  Lesson[]
+  quiz     Quiz[]
+  visios   VisioSession[]
+  suivis   SuivreCours[]
+  category Category?      @relation(fields: [categoryId], references: [id])
+}
+
+enum Role {
+  admin
+  formateur
+  etudiant
+}
+
+model Lesson {
+  id       Int     @id @default(autoincrement())
+  title    String  @db.VarChar(255)
+  videoUrl String?
+  document String?
+  contenu  String?
+  coursId  Int
+
+  cours       Cours        @relation(fields: [coursId], references: [id])
+  userLessons UserLesson[]
+}
+
+model SuivreCours {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  coursId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  cours Cours @relation(fields: [coursId], references: [id])
+}
+
+model UserLesson {
+  id         Int     @id @default(autoincrement())
+  userId     Int
+  lessonId   Int
+  isFinished Boolean @default(false)
+
+  user   User   @relation(fields: [userId], references: [id])
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId]) // 👈 important pour le upsert
+}
+
+model Quiz {
+  id      Int    @id @default(autoincrement())
+  title   String @db.VarChar(255)
+  coursId Int
+
+  cours     Cours          @relation(fields: [coursId], references: [id])
+  questions QuizQuestion[]
+  results   QuizResult[]
+}
+
+model QuizQuestion {
+  id      Int    @id @default(autoincrement())
+  type    String @db.VarChar(50)
+  content String
+  answer  String
+  quizId  Int
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id])
+  options QuizOption[]
+}
+
+model QuizOption {
+  id             Int    @id @default(autoincrement())
+  quizQuestionId Int
+  nom            String @db.VarChar(255)
+
+  question QuizQuestion @relation(fields: [quizQuestionId], references: [id])
+}
+
+model QuizResult {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  quizId    Int
+  score     Int
+  attemptAt DateTime
+
+  user User @relation(fields: [userId], references: [id])
+  quiz Quiz @relation(fields: [quizId], references: [id])
+}
+
+model VisioSession {
+  id                 Int      @id @default(autoincrement())
+  titre              String   @db.VarChar(100)
+  description        String?
+  coursId            Int
+  formateurId        Int
+  lienVisio          String?
+  dateDebut          DateTime
+  dateFin            DateTime
+  estEnregistre      Boolean  @default(false)
+  lienEnregistrement String?
+
+  cours          Cours                @relation(fields: [coursId], references: [id])
+  formateur      User                 @relation("FormateurRelation", fields: [formateurId], references: [id])
+  participations ParticipationVisio[]
+}
+
+model ParticipationVisio {
+  id               Int     @id @default(autoincrement())
+  visioId          Int
+  utilisateurId    Int
+  estPresent       Boolean @default(false)
+  tempsDeConnexion Int?
+  feedback         String?
+
+  visio       VisioSession @relation(fields: [visioId], references: [id])
+  utilisateur User         @relation("UserParticipation", fields: [utilisateurId], references: [id])
+}
+
+model Category {
+  id          Int    @id @default(autoincrement())
+  name        String @db.VarChar(100)
+  description String @db.VarChar(250)
+
+  cours Cours[]
+}

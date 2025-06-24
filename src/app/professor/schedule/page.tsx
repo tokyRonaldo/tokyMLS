@@ -1,0 +1,727 @@
+"use client"
+
+import Link from "next/link"
+import {
+  BookOpen,
+  GraduationCap,
+  LayoutDashboard,
+  Users,
+  FileText,
+  Settings,
+  Bell,
+  Menu,
+  CalendarIcon,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+  Video,
+  Clock,
+  UsersIcon,
+  LucideSearch,
+  Filter,
+  ArrowUpDown,
+} from "lucide-react"
+import { format, addDays, subDays, startOfWeek, isSameDay } from "date-fns"
+import { fr } from "date-fns/locale"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useEffect, useState } from "react"
+
+
+export default function InstructorSchedule() {
+  // Current date for the calendar
+  const today = new Date()
+  const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 }) // Week starts on Monday
+
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [sessions, setSessions] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [titreSchedule, setTitreSchedule] = useState<string | null>(null);
+  const [coursSchedule, setCoursSchedule] = useState<string | null>(null);
+  const [dateSchedule, setDateSchedule] = useState<string | null>(null);
+  const [heureDebutSchedule, setHeureDebutSchedule] = useState<string | null>(null);
+  const [heureFinSchedule, setHeureFinSchedule] = useState<string | null>(null);
+  const [lienSchedule, setLienSchedule] = useState<string | null>(null);
+  const [descriptionSchedule, setDescriptionSchedule] = useState<string | null>(null);
+
+  const user= localStorage.getItem('user');
+  console.log(user)
+  const formateur= JSON.parse(user);
+
+
+  const monthNames = [
+    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+  ];
+
+  const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+  const getDaysInMonth = (date : any) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
+    
+    const days = [];
+    const currentDate = new Date(startDate);
+    
+    for (let i = 0; i < 42; i++) {
+      days.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    return days;
+  };
+
+  const formatDate = (date : any) => {
+    return date.toISOString().split('T')[0];
+  };
+  /*
+  const getSessionsForDate = (date :any) => {
+    const dateStr = formatDate(date);
+    return sessions.filter(session => session.date === dateStr);
+  };*/
+
+  const isCurrentMonth = (date : any) => {
+    return date.getMonth() === currentDate.getMonth();
+  };
+
+  const isToday = (date : any) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
+  const navigateMonth = (direction : any) => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(currentDate.getMonth() + direction);
+    setCurrentDate(newDate);
+  };
+
+  const days = getDaysInMonth(currentDate);
+
+
+  // Sample video conference data
+  const videoConferences = [
+    {
+      id: 1,
+      title: "Introduction au développement web",
+      course: "Web Development Fundamentals",
+      date: addDays(currentWeekStart, 1), // Tuesday
+      startTime: "10:00",
+      endTime: "11:30",
+      attendees: 24,
+      platform: "Zoom",
+      link: "https://zoom.us/j/123456789",
+      status: "upcoming",
+    },
+    {
+      id: 2,
+      title: "Consultation de projet",
+      course: "UX Design Principles",
+      date: addDays(currentWeekStart, 3), // Thursday
+      startTime: "14:00",
+      endTime: "15:00",
+      attendees: 12,
+      platform: "Google Meet",
+      link: "https://meet.google.com/abc-defg-hij",
+      status: "upcoming",
+    },
+    {
+      id: 3,
+      title: "Session de questions-réponses",
+      course: "Data Science Essentials",
+      date: addDays(currentWeekStart, 4), // Friday
+      startTime: "16:00",
+      endTime: "17:00",
+      attendees: 18,
+      platform: "Microsoft Teams",
+      link: "https://teams.microsoft.com/l/meetup-join/...",
+      status: "upcoming",
+    },
+  ]
+
+  const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>) =>{
+    e.preventDefault()
+
+    console.log(formateur);
+    //c'est un objet
+    const dataVisio={
+      'formateur_id' : formateur.id, 
+      'titreChedule' : titreSchedule, 
+      'coursSchedule' : coursSchedule,      
+      'dateSchedule' : dateSchedule ,   
+      'heureDebutSchedule' : heureDebutSchedule,      
+      'heureFinSchedule' : heureFinSchedule, 
+      'lienSchedule' : lienSchedule,
+      'descriptionSchedule' : descriptionSchedule      
+    }
+    console.log(dataVisio);
+    try {
+      const response = await fetch(`/api/professor/schedule?id=2`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataVisio) //transforme en json text '{"nom": "Bob", "email": "bob@example.com"}'
+      });
+  
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération du cours');
+        return;
+      }
+  
+      // Typage de la réponse attendue (exemple)
+      const data: any = await response.json();
+      /*if(data.lesson.userLessons && data.lesson.userLessons.length > 0 ){
+        const userLesson = (data.lesson.userLessons as any[])?.find((ul) => ul.userId === 1);
+        if (userLesson && userLesson.isFinished) {
+          // Tu peux accéder à userLesson.isFinished, etc.
+          setIsCompleted(true)
+        }
+      }
+      setLessonDetail(data.lesson);
+      setListLesson(data.listLesson);*/
+      console.log(data)
+    } catch (error: any) {
+      console.error('Erreur fetch :', error.message);
+    }
+  }
+
+  const handleListeCours= async()=>{
+    const response= await fetch(`/api/professor/schedule?formateur_id=${formateur.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log(response);
+  }
+
+  useEffect(()=>{
+    console.log(localStorage.getItem('token'));
+    handleListeCours();
+  },[])
+
+  return (
+        <main className="flex-1 bg-slate-50">
+          <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+              <h2 className="font-medium">Schedule</h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon">
+                <Bell className="h-5 w-5" />
+              </Button>
+              <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm">
+                JD
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="flex flex-col gap-6 md:gap-8 max-w-6xl mx-auto">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">Calendrier des visioconférences</h1>
+                  <p className="text-slate-500">Gérez vos sessions de visioconférence pour vos cours</p>
+                  <p className="text-slate-500">
+                    Cliquez sur "Créer une visioconférence" ou sur "+ Ajouter session" dans le calendrier pour
+                    programmer une nouvelle session
+                  </p>
+                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 shadow-lg">
+                      <Plus className="mr-2 h-5 w-5" />
+                      Créer une visioconférence
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[525px]">
+                    <DialogHeader>
+                      <DialogTitle>Programmer une visioconférence</DialogTitle>
+                      <DialogDescription>
+                        Remplissez les détails pour créer une nouvelle session de visioconférence pour vos étudiants.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="title">Titre</Label>
+                        <Input id="title" placeholder="Titre de la visioconférence" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setTitreSchedule(e.target.value)} />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="course">Cours associé</Label>
+                        <Select onValueChange={(value) => setCoursSchedule(value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un cours" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="web-dev">Web Development Fundamentals</SelectItem>
+                            <SelectItem value="data-science">Data Science Essentials</SelectItem>
+                            <SelectItem value="ux-design">UX Design Principles</SelectItem>
+                            <SelectItem value="mobile-dev">Mobile App Development</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="date">Date</Label>
+                          <Input id="date" type="date" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setDateSchedule(e.target.value)}/>
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="platform">Plateforme</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Plateforme" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="zoom">Zoom</SelectItem>
+                              <SelectItem value="meet">Google Meet</SelectItem>
+                              <SelectItem value="teams">Microsoft Teams</SelectItem>
+                              <SelectItem value="other">Autre</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="start-time">Heure de début</Label>
+                          <Input id="start-time" type="time"  onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setHeureDebutSchedule(e.target.value)}/>
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="end-time">Heure de fin</Label>
+                          <Input id="end-time" type="time" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setHeureFinSchedule(e.target.value)} />
+                        </div>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="link">Lien de la visioconférence</Label>
+                        <Input id="link" placeholder="https://" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setLienSchedule(e.target.value)}/>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="description">Description (optionnel)</Label>
+                        <Textarea
+                          id="description"
+                          placeholder="Informations supplémentaires pour les étudiants"
+                          className="min-h-[80px]" onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>setDescriptionSchedule(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" className="border-slate-200">
+                        Annuler
+                      </Button>
+                      <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={(e:React.MouseEvent<HTMLButtonElement>)=>{console.log('tessttttt');handleAddVisio(e); }}>Programmer</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <Tabs defaultValue="calendar" className="space-y-6">
+                <TabsList className="bg-white p-1 rounded-lg border border-slate-200">
+                  <TabsTrigger
+                    value="calendar"
+                    className="rounded-md data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600"
+                  >
+                    Vue Calendrier
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="list"
+                    className="rounded-md data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600"
+                  >
+                    Vue Liste
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="calendar">
+                  <Card className="border-none shadow-sm">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Button variant="outline" size="icon" className="h-10 w-10 border-slate-200" onClick={() => navigateMonth(-1)}>
+                            <ChevronLeft className="h-5 w-5" />
+                          </Button>
+                          <h2 className="text-xl font-semibold">
+                          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                          </h2>
+                          <Button variant="outline" size="icon" className="h-10 w-10 border-slate-200" onClick={() => navigateMonth(1)}>
+                            <ChevronRight className="h-5 w-5" />
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" className="border-slate-200">
+                            Aujourd'hui
+                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button className="bg-emerald-600 hover:bg-emerald-700 shadow-md">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Nouvelle session
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[525px]">
+                              <DialogHeader>
+                                <DialogTitle>Ajouter une visioconférence</DialogTitle>
+                                <DialogDescription>
+                                  Ajoutez rapidement un lien de visioconférence à une date spécifique.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="grid gap-4 py-4">
+                                <div className="grid gap-2">
+                                  <Label htmlFor="quick-title">Titre de la session</Label>
+                                  <Input id="quick-title" placeholder="Ex: Cours de mathématiques" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="grid gap-2">
+                                    <Label htmlFor="quick-date">Date</Label>
+                                    <Input id="quick-date" type="date" />
+                                  </div>
+                                  <div className="grid gap-2">
+                                    <Label htmlFor="quick-time">Heure</Label>
+                                    <Input id="quick-time" type="time" defaultValue="10:00" />
+                                  </div>
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="quick-link">Lien de visioconférence</Label>
+                                  <Input id="quick-link" placeholder="https://zoom.us/j/..." />
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="quick-course">Cours (optionnel)</Label>
+                                  <Select>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Sélectionner un cours" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="web-dev">Web Development Fundamentals</SelectItem>
+                                      <SelectItem value="data-science">Data Science Essentials</SelectItem>
+                                      <SelectItem value="ux-design">UX Design Principles</SelectItem>
+                                      <SelectItem value="mobile-dev">Mobile App Development</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                              <DialogFooter>
+                                <Button variant="outline" className="border-slate-200">
+                                  Annuler
+                                </Button>
+                                <Button className="bg-emerald-600 hover:bg-emerald-700">Ajouter</Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </div> 
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Grand calendrier mensuel */}
+                      <div className="grid grid-cols-7 gap-2 mb-4">
+                        {dayNames.map((day) => (
+                          <div key={day} className="text-center text-sm font-medium text-slate-500 py-2">
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Grille du calendrier */}
+                      <div className="grid grid-cols-7 gap-2">
+                        {days.map((date, i) => {
+                          const isCurrentMonthDay = isCurrentMonth(date);
+                          const isTodayDate = isToday(date);
+
+                          const dayConferences = videoConferences.filter((conf) => isSameDay(conf.date, date))
+
+                          return (
+                            <div
+                              key={i}
+                              className={`min-h-[120px] p-2 border rounded-lg transition-colors ${
+                                isCurrentMonthDay
+                                  ? "bg-white border-slate-200 hover:bg-slate-50"
+                                  : "bg-slate-50 border-slate-100 text-slate-400"
+                              } ${isTodayDate ? "ring-2 ring-emerald-500 bg-emerald-50" : ""}`}
+                            >
+                              <div className={`text-sm font-medium mb-2 ${isTodayDate ? "text-emerald-700" : ""}`}>
+                                {format(date, "d")}
+                              </div>
+
+                              {/* Visioconférences du jour */}
+                              <div className="space-y-1">
+                                {dayConferences.map((conference) => (
+                                  <div
+                                    key={conference.id}
+                                    onClick={() => window.open(conference.link, "_blank")}
+                                    className="bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 rounded-md p-2 text-xs cursor-pointer transition-colors group"
+                                  >
+                                    <div className="flex items-center gap-1 mb-1">
+                                      <Video className="h-3 w-3 text-emerald-600" />
+                                      <span className="font-medium text-emerald-800 truncate">{conference.title}</span>
+                                    </div>
+                                    <div className="text-emerald-600 flex items-center gap-1">
+                                      <Clock className="h-3 w-3" />
+                                      <span>{conference.startTime}</span>
+                                    </div>
+                                    <div className="text-emerald-700 text-xs mt-1 group-hover:underline">
+                                      Cliquer pour rejoindre
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Bouton d'ajout rapide */}
+                              {isCurrentMonthDay && (
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="w-full mt-2 h-8 text-xs border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                    >
+                                      <Plus className="mr-1 h-3 w-3" />
+                                      Ajouter session
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                      <DialogTitle>
+                                        Visioconférence - {format(date, "d MMMM yyyy", { locale: fr })}
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="day-title">Titre</Label>
+                                        <Input id="day-title" placeholder="Titre de la session" />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="day-time">Heure</Label>
+                                        <Input id="day-time" type="time" defaultValue="10:00" />
+                                      </div>
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="day-link">Lien de visioconférence</Label>
+                                        <Input id="day-link" placeholder="https://zoom.us/j/..." />
+                                      </div>
+                                    </div>
+                                    <DialogFooter>
+                                      <Button variant="outline">Annuler</Button>
+                                      <Button className="bg-emerald-600 hover:bg-emerald-700">Ajouter</Button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="list">
+                  <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-white p-4 rounded-lg shadow-sm mb-6">
+                    <div className="relative w-full md:w-96">
+                      <LucideSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        type="search"
+                        placeholder="Rechercher une visioconférence..."
+                        className="w-full pl-8 border-slate-200"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="h-9 border-slate-200">
+                        <Filter className="mr-2 h-4 w-4" />
+                        Filtrer
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-9 border-slate-200">
+                            <ArrowUpDown className="mr-2 h-4 w-4" />
+                            Trier
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>Date (plus récente)</DropdownMenuItem>
+                          <DropdownMenuItem>Date (plus ancienne)</DropdownMenuItem>
+                          <DropdownMenuItem>Titre (A-Z)</DropdownMenuItem>
+                          <DropdownMenuItem>Cours (A-Z)</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+
+                  <Card className="border-none shadow-sm">
+                    <CardContent className="p-0">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Titre</TableHead>
+                            <TableHead>Cours</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Horaire</TableHead>
+                            <TableHead>Participants</TableHead>
+                            <TableHead>Plateforme</TableHead>
+                            <TableHead>Statut</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {videoConferences.map((conference) => (
+                            <TableRow key={conference.id}>
+                              <TableCell className="font-medium">
+                                <Link href={`/instructor/schedule/${conference.id}`} className="hover:underline">
+                                  {conference.title}
+                                </Link>
+                              </TableCell>
+                              <TableCell>{conference.course}</TableCell>
+                              <TableCell>{format(conference.date, "dd/MM/yyyy")}</TableCell>
+                              <TableCell>
+                                {conference.startTime} - {conference.endTime}
+                              </TableCell>
+                              <TableCell>{conference.attendees}</TableCell>
+                              <TableCell>{conference.platform}</TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant="outline"
+                                  className={
+                                    conference.status === "upcoming"
+                                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                                      : conference.status === "active"
+                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                        : conference.status === "completed"
+                                          ? "bg-slate-50 text-slate-700 border-slate-200"
+                                          : "bg-red-50 text-red-700 border-red-200"
+                                  }
+                                >
+                                  {conference.status === "upcoming"
+                                    ? "À venir"
+                                    : conference.status === "active"
+                                      ? "En cours"
+                                      : conference.status === "completed"
+                                        ? "Terminée"
+                                        : "Annulée"}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem>
+                                      <Link href={`/instructor/schedule/${conference.id}`} className="flex w-full">
+                                        Voir les détails
+                                      </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>Modifier</DropdownMenuItem>
+                                    <DropdownMenuItem>Démarrer</DropdownMenuItem>
+                                    <DropdownMenuItem>Envoyer un rappel</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className="text-red-600">Annuler</DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Prochaines visioconférences</h2>
+                <div className="space-y-4">
+                  {videoConferences.map((conference) => (
+                    <Card key={conference.id} className="border-none shadow-sm">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between">
+                          <div>
+                            <CardTitle className="flex items-center gap-2">
+                              <Video className="h-5 w-5 text-emerald-600" />
+                              {conference.title}
+                            </CardTitle>
+                            <CardDescription>{conference.course}</CardDescription>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm" className="border-slate-200">
+                              <Link href={`/instructor/schedule/${conference.id}`}>Détails</Link>
+                            </Button>
+                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                              Démarrer
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-4 text-sm">
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon className="h-4 w-4 text-slate-400" />
+                            <span>{format(conference.date, "EEEE d MMMM yyyy", { locale: fr })}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-slate-400" />
+                            <span>
+                              {conference.startTime} - {conference.endTime}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <UsersIcon className="h-4 w-4 text-slate-400" />
+                            <span>{conference.attendees} participants</span>
+                          </div>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="text-sm font-medium">{conference.platform}:</div>
+                          <Link
+                            href={conference.link}
+                            target="_blank"
+                            className="text-sm text-blue-600 hover:underline truncate"
+                          >
+                            {conference.link}
+                          </Link>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="border-t pt-4 flex justify-between">
+                        <div className="text-sm text-slate-500">
+                          Créé le {format(subDays(today, Math.floor(Math.random() * 7) + 1), "d MMM", { locale: fr })}
+                        </div>
+                        <Button variant="outline" size="sm" className="border-slate-200">
+                          Envoyer un rappel
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+  )
+}

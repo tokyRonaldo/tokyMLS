@@ -1,0 +1,202 @@
+import path from "path";
+import fs from "fs";
+import multer from "multer";
+import { createRouter } from "next-connect";
+import getRawBody from 'raw-body';
+//import { PrismaClient } from "@prisma/client";
+import authMiddleware from "../../src/lib/middleware/auth";
+
+//import prisma from '@/lib/prisma';    
+//ca a causer bcp de bug // ajouter npx prisma generate
+import { PrismaClient } from '../../src/generated/prisma';
+const prisma = new PrismaClient();
+
+
+// Configuration du stockage pour Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(process.cwd(), "public/uploads"));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const extension = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + extension);
+  },
+});
+
+const upload = multer({ storage });
+
+// Création de la route API avec createRouter
+const apiRoute = createRouter({
+  onError(error, req, res) {
+    res.status(501).json({ error: `Erreur serveur : ${error.message}` });
+  },
+  onNoMatch(req, res) {
+    res.status(405).json({ error: `Méthode ${req.method} non autorisée` });
+  },
+});
+
+/// Application des middlewares
+//apiRoute.use(authMiddleware); // Middleware d'authentification exécuté en premier
+
+// Middleware pour gérer les fichiers uploadés
+/*apiRoute.use(upload.fields([
+  { name: "coursImage", maxCount: 1 },
+  { name: "coursVideo", maxCount: 1 },
+  { name: /^lessonVideo_\d+$/, maxCount: 1 },
+  { name: /^lessonVideo_\d+$/, maxCount: 1 }
+]));
+*/
+
+apiRoute.use(upload.any());
+
+
+// Gestion de la requête POST
+apiRoute.post(async (req, res) => {
+  try {
+    const {
+      coursTitle,
+      coursDescription,
+      coursLevel,
+      coursContent,
+      coursCategory,
+      coursSubtitle,
+    } = req.body;
+    const coursImage = req.files?.coursImage?.[0]?.filename || "";
+    const coursVideo = req.files?.coursVideo?.[0]?.filename || "";
+    //console.log(Object.keys(prisma));
+
+  // Création du cours avec l'ID de l'utilisateur
+  const cours = await prisma.cours.create({
+    data: {
+      nom: coursTitle || "Sans titre",
+      description: coursDescription || "",
+      level: coursLevel || "",
+      content: coursContent || "",
+      //categoryId: 1,
+      category: {
+        connect: {
+          id: 1
+        }
+      },
+      sousTitre: coursSubtitle || "",
+      image: coursImage,
+      video: coursVideo,
+      user : {
+        connect: {
+          id: 1
+        }
+      }
+
+    },
+  });
+
+
+  const lessons = [];
+
+  /*let index = 0;
+  for ()
+  while (req.body.listLesson[index].title !== undefined) {
+    lessons.push({
+      title: req.body.listLesson[index].title,
+      contenu: req.body.listLesson[index].contenue,
+      documentLesson: req.files.find(f => f.fieldname === `lessonDocument_${index}`),
+      videoLesson: req.files.find(f => f.fieldname === `lessonVideo_${index}`)
+    });
+    index++;
+  }*/
+    const listLessonRaw = req.body.listLesson;
+    const listLesson = Array.isArray(listLessonRaw)
+      ? listLessonRaw
+      : Object.values(listLessonRaw); // au cas où c'est un objet indexé
+    
+    
+    for (let index = 0; index < listLesson.length; index++) {
+      const lesson = listLesson[index];
+    
+      if (!lesson?.title) continue; // Ignore les entrées invalides
+    
+      const documentFile = req.files.find(f => f.fieldname === `lessonDocument_${index}`);
+      const videoFile = req.files.find(f => f.fieldname === `lessonVideo_${index}`);
+    
+      lessons.push({
+        title: lesson.title,
+        contenu: lesson.contenu,
+        documentLesson: documentFile?.filename ?? null,
+        videoLesson: videoFile?.filename ?? null
+      });
+    }
+    
+    console.log("✅ lessons", lessons);
+
+    for (const [index, value] of lessons.entries()) {
+      const lesson = await prisma.lesson.create({
+        data: {
+          title: value.title,
+          videoUrl: value.videoLesson,
+          document: value.documentLesson,
+          contenu: value.contenu,
+          cours: {
+            connect: {
+              id: cours.id
+            }
+          }
+        },
+      });
+    }
+
+
+    res.status(200).json({ success: true, cours });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Erreur serveur", error: e.message });
+  }
+});
+
+apiRoute.get(async (req, res) => {
+  try{
+    const response=  await prisma.cours.findMany();
+    return res.status(200).json(response);
+
+  }catch(e){
+    return res.status(500).json({message:'erreur serveur','error' : e.message})
+  }
+})
+
+
+/**
+ * DELETE = Suppression
+ */
+apiRoute.delete(async (req, res) => {
+  try {
+    const raw = await getRawBody(req);
+    const body = JSON.parse(raw.toString());
+    const { id } = body;
+
+    await prisma.lesson.deleteMany({
+      where: {
+        coursId: Number(id),
+      },
+    });
+
+    await prisma.cours.delete({
+      where: { id: Number(id) },
+    });
+
+    const result=await prisma.cours.findMany();
+
+    return res.status(200).json({ success: true, message: "Cours supprimé",data : result });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Exportation de la configuration pour désactiver le parser de corps par défaut
+export const config = {
+  api: {
+    bodyParser: false, // Important pour Multer
+  },
+};
+
+// Exportation du routeur par défaut
+export default apiRoute.handler();

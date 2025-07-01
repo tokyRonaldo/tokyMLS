@@ -23,6 +23,7 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
     console.log(req.body)
     const data= req.body
     
+    try{
     let dateSchedule=data.dateSchedule;
     let heureDebutSchedule=data.heureDebutSchedule;
     let heureFinSchedule=data.heureFinSchedule;
@@ -39,18 +40,19 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
     console.log('Fin :', formatDateForMySQL(dateFin));     // '2025-06-19 14:00:00'
 
     //let dateDebut=;
-    /*const schedule= await prisma.visioSession.create({
+    const schedule= await prisma.visioSession.create({
         data:{
             titre:data.titreChedule,
             description:data.descriptionSchedule,
-            dateDebut:data.dateSchedule,
-            dateFin:data.dateSchedule,
+            dateDebut:dateDebut,
+            dateFin:dateFin,
             lienVisio:data.lienSchedule,
-            estEnregistre:data.dateSchedule,
-            lienEnregistrement:'',
+            estEnregistre:false,
+            lienEnregistrement:data.lienSchedule,
             cours :{
                 connect:{
-                    id:data.coursSchedule
+                    //id:data.coursSchedule
+                    id:2
                 }
             },
             formateur:{
@@ -62,7 +64,11 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
 
 
         }
-    })*/
+    });
+    return res.status(200).json(schedule);
+  }catch(e){
+    return res.status(500).json({message:'erreur serveur','error' : e.message})
+  }
   })
 
   apiRoute.get(async (req, res) => {

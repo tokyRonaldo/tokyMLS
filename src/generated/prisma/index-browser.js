@@ -207,7 +207,8 @@ exports.Prisma.VisioSessionScalarFieldEnum = {
   dateDebut: 'dateDebut',
   dateFin: 'dateFin',
   estEnregistre: 'estEnregistre',
-  lienEnregistrement: 'lienEnregistrement'
+  lienEnregistrement: 'lienEnregistrement',
+  status: 'status'
 };
 
 exports.Prisma.ParticipationVisioScalarFieldEnum = {
@@ -276,7 +277,8 @@ exports.Prisma.VisioSessionOrderByRelevanceFieldEnum = {
   titre: 'titre',
   description: 'description',
   lienVisio: 'lienVisio',
-  lienEnregistrement: 'lienEnregistrement'
+  lienEnregistrement: 'lienEnregistrement',
+  status: 'status'
 };
 
 exports.Prisma.ParticipationVisioOrderByRelevanceFieldEnum = {

@@ -11331,6 +11331,7 @@ export namespace Prisma {
     dateFin: Date | null
     estEnregistre: boolean | null
     lienEnregistrement: string | null
+    status: string | null
   }
 
   export type VisioSessionMaxAggregateOutputType = {
@@ -11344,6 +11345,7 @@ export namespace Prisma {
     dateFin: Date | null
     estEnregistre: boolean | null
     lienEnregistrement: string | null
+    status: string | null
   }
 
   export type VisioSessionCountAggregateOutputType = {
@@ -11357,6 +11359,7 @@ export namespace Prisma {
     dateFin: number
     estEnregistre: number
     lienEnregistrement: number
+    status: number
     _all: number
   }
 
@@ -11384,6 +11387,7 @@ export namespace Prisma {
     dateFin?: true
     estEnregistre?: true
     lienEnregistrement?: true
+    status?: true
   }
 
   export type VisioSessionMaxAggregateInputType = {
@@ -11397,6 +11401,7 @@ export namespace Prisma {
     dateFin?: true
     estEnregistre?: true
     lienEnregistrement?: true
+    status?: true
   }
 
   export type VisioSessionCountAggregateInputType = {
@@ -11410,6 +11415,7 @@ export namespace Prisma {
     dateFin?: true
     estEnregistre?: true
     lienEnregistrement?: true
+    status?: true
     _all?: true
   }
 
@@ -11510,6 +11516,7 @@ export namespace Prisma {
     dateFin: Date
     estEnregistre: boolean
     lienEnregistrement: string | null
+    status: string | null
     _count: VisioSessionCountAggregateOutputType | null
     _avg: VisioSessionAvgAggregateOutputType | null
     _sum: VisioSessionSumAggregateOutputType | null
@@ -11542,6 +11549,7 @@ export namespace Prisma {
     dateFin?: boolean
     estEnregistre?: boolean
     lienEnregistrement?: boolean
+    status?: boolean
     cours?: boolean | CoursDefaultArgs<ExtArgs>
     formateur?: boolean | UserDefaultArgs<ExtArgs>
     participations?: boolean | VisioSession$participationsArgs<ExtArgs>
@@ -11561,9 +11569,10 @@ export namespace Prisma {
     dateFin?: boolean
     estEnregistre?: boolean
     lienEnregistrement?: boolean
+    status?: boolean
   }
 
-  export type VisioSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "titre" | "description" | "coursId" | "formateurId" | "lienVisio" | "dateDebut" | "dateFin" | "estEnregistre" | "lienEnregistrement", ExtArgs["result"]["visioSession"]>
+  export type VisioSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "titre" | "description" | "coursId" | "formateurId" | "lienVisio" | "dateDebut" | "dateFin" | "estEnregistre" | "lienEnregistrement" | "status", ExtArgs["result"]["visioSession"]>
   export type VisioSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     cours?: boolean | CoursDefaultArgs<ExtArgs>
     formateur?: boolean | UserDefaultArgs<ExtArgs>
@@ -11589,6 +11598,7 @@ export namespace Prisma {
       dateFin: Date
       estEnregistre: boolean
       lienEnregistrement: string | null
+      status: string | null
     }, ExtArgs["result"]["visioSession"]>
     composites: {}
   }
@@ -11971,6 +11981,7 @@ export namespace Prisma {
     readonly dateFin: FieldRef<"VisioSession", 'DateTime'>
     readonly estEnregistre: FieldRef<"VisioSession", 'Boolean'>
     readonly lienEnregistrement: FieldRef<"VisioSession", 'String'>
+    readonly status: FieldRef<"VisioSession", 'String'>
   }
     
 
@@ -14441,7 +14452,8 @@ export namespace Prisma {
     dateDebut: 'dateDebut',
     dateFin: 'dateFin',
     estEnregistre: 'estEnregistre',
-    lienEnregistrement: 'lienEnregistrement'
+    lienEnregistrement: 'lienEnregistrement',
+    status: 'status'
   };
 
   export type VisioSessionScalarFieldEnum = (typeof VisioSessionScalarFieldEnum)[keyof typeof VisioSessionScalarFieldEnum]
@@ -14543,7 +14555,8 @@ export namespace Prisma {
     titre: 'titre',
     description: 'description',
     lienVisio: 'lienVisio',
-    lienEnregistrement: 'lienEnregistrement'
+    lienEnregistrement: 'lienEnregistrement',
+    status: 'status'
   };
 
   export type VisioSessionOrderByRelevanceFieldEnum = (typeof VisioSessionOrderByRelevanceFieldEnum)[keyof typeof VisioSessionOrderByRelevanceFieldEnum]
@@ -15224,6 +15237,7 @@ export namespace Prisma {
     dateFin?: DateTimeFilter<"VisioSession"> | Date | string
     estEnregistre?: BoolFilter<"VisioSession"> | boolean
     lienEnregistrement?: StringNullableFilter<"VisioSession"> | string | null
+    status?: StringNullableFilter<"VisioSession"> | string | null
     cours?: XOR<CoursScalarRelationFilter, CoursWhereInput>
     formateur?: XOR<UserScalarRelationFilter, UserWhereInput>
     participations?: ParticipationVisioListRelationFilter
@@ -15240,6 +15254,7 @@ export namespace Prisma {
     dateFin?: SortOrder
     estEnregistre?: SortOrder
     lienEnregistrement?: SortOrderInput | SortOrder
+    status?: SortOrderInput | SortOrder
     cours?: CoursOrderByWithRelationInput
     formateur?: UserOrderByWithRelationInput
     participations?: ParticipationVisioOrderByRelationAggregateInput
@@ -15260,6 +15275,7 @@ export namespace Prisma {
     dateFin?: DateTimeFilter<"VisioSession"> | Date | string
     estEnregistre?: BoolFilter<"VisioSession"> | boolean
     lienEnregistrement?: StringNullableFilter<"VisioSession"> | string | null
+    status?: StringNullableFilter<"VisioSession"> | string | null
     cours?: XOR<CoursScalarRelationFilter, CoursWhereInput>
     formateur?: XOR<UserScalarRelationFilter, UserWhereInput>
     participations?: ParticipationVisioListRelationFilter
@@ -15276,6 +15292,7 @@ export namespace Prisma {
     dateFin?: SortOrder
     estEnregistre?: SortOrder
     lienEnregistrement?: SortOrderInput | SortOrder
+    status?: SortOrderInput | SortOrder
     _count?: VisioSessionCountOrderByAggregateInput
     _avg?: VisioSessionAvgOrderByAggregateInput
     _max?: VisioSessionMaxOrderByAggregateInput
@@ -15297,6 +15314,7 @@ export namespace Prisma {
     dateFin?: DateTimeWithAggregatesFilter<"VisioSession"> | Date | string
     estEnregistre?: BoolWithAggregatesFilter<"VisioSession"> | boolean
     lienEnregistrement?: StringNullableWithAggregatesFilter<"VisioSession"> | string | null
+    status?: StringNullableWithAggregatesFilter<"VisioSession"> | string | null
   }
 
   export type ParticipationVisioWhereInput = {
@@ -15977,6 +15995,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
     cours: CoursCreateNestedOneWithoutVisiosInput
     formateur: UserCreateNestedOneWithoutVisiosEnTantQueFormateurInput
     participations?: ParticipationVisioCreateNestedManyWithoutVisioInput
@@ -15993,6 +16012,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
     participations?: ParticipationVisioUncheckedCreateNestedManyWithoutVisioInput
   }
 
@@ -16004,6 +16024,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
     cours?: CoursUpdateOneRequiredWithoutVisiosNestedInput
     formateur?: UserUpdateOneRequiredWithoutVisiosEnTantQueFormateurNestedInput
     participations?: ParticipationVisioUpdateManyWithoutVisioNestedInput
@@ -16020,6 +16041,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
     participations?: ParticipationVisioUncheckedUpdateManyWithoutVisioNestedInput
   }
 
@@ -16034,6 +16056,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
   }
 
   export type VisioSessionUpdateManyMutationInput = {
@@ -16044,6 +16067,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VisioSessionUncheckedUpdateManyInput = {
@@ -16057,6 +16081,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ParticipationVisioCreateInput = {
@@ -16857,6 +16882,7 @@ export namespace Prisma {
     dateFin?: SortOrder
     estEnregistre?: SortOrder
     lienEnregistrement?: SortOrder
+    status?: SortOrder
   }
 
   export type VisioSessionAvgOrderByAggregateInput = {
@@ -16876,6 +16902,7 @@ export namespace Prisma {
     dateFin?: SortOrder
     estEnregistre?: SortOrder
     lienEnregistrement?: SortOrder
+    status?: SortOrder
   }
 
   export type VisioSessionMinOrderByAggregateInput = {
@@ -16889,6 +16916,7 @@ export namespace Prisma {
     dateFin?: SortOrder
     estEnregistre?: SortOrder
     lienEnregistrement?: SortOrder
+    status?: SortOrder
   }
 
   export type VisioSessionSumOrderByAggregateInput = {
@@ -18257,6 +18285,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
     cours: CoursCreateNestedOneWithoutVisiosInput
     participations?: ParticipationVisioCreateNestedManyWithoutVisioInput
   }
@@ -18271,6 +18300,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
     participations?: ParticipationVisioUncheckedCreateNestedManyWithoutVisioInput
   }
 
@@ -18456,6 +18486,7 @@ export namespace Prisma {
     dateFin?: DateTimeFilter<"VisioSession"> | Date | string
     estEnregistre?: BoolFilter<"VisioSession"> | boolean
     lienEnregistrement?: StringNullableFilter<"VisioSession"> | string | null
+    status?: StringNullableFilter<"VisioSession"> | string | null
   }
 
   export type UserCreateWithoutCoursInput = {
@@ -18550,6 +18581,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
     formateur: UserCreateNestedOneWithoutVisiosEnTantQueFormateurInput
     participations?: ParticipationVisioCreateNestedManyWithoutVisioInput
   }
@@ -18564,6 +18596,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
     participations?: ParticipationVisioUncheckedCreateNestedManyWithoutVisioInput
   }
 
@@ -19804,6 +19837,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
     cours: CoursCreateNestedOneWithoutVisiosInput
     formateur: UserCreateNestedOneWithoutVisiosEnTantQueFormateurInput
   }
@@ -19819,6 +19853,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
   }
 
   export type VisioSessionCreateOrConnectWithoutParticipationsInput = {
@@ -19879,6 +19914,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
     cours?: CoursUpdateOneRequiredWithoutVisiosNestedInput
     formateur?: UserUpdateOneRequiredWithoutVisiosEnTantQueFormateurNestedInput
   }
@@ -19894,6 +19930,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUpsertWithoutParticipationsInput = {
@@ -20049,6 +20086,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
   }
 
   export type CoursUpdateWithoutUserInput = {
@@ -20188,6 +20226,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
     cours?: CoursUpdateOneRequiredWithoutVisiosNestedInput
     participations?: ParticipationVisioUpdateManyWithoutVisioNestedInput
   }
@@ -20202,6 +20241,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
     participations?: ParticipationVisioUncheckedUpdateManyWithoutVisioNestedInput
   }
 
@@ -20215,6 +20255,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LessonCreateManyCoursInput = {
@@ -20240,6 +20281,7 @@ export namespace Prisma {
     dateFin: Date | string
     estEnregistre?: boolean
     lienEnregistrement?: string | null
+    status?: string | null
   }
 
   export type SuivreCoursCreateManyCoursInput = {
@@ -20300,6 +20342,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
     formateur?: UserUpdateOneRequiredWithoutVisiosEnTantQueFormateurNestedInput
     participations?: ParticipationVisioUpdateManyWithoutVisioNestedInput
   }
@@ -20314,6 +20357,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
     participations?: ParticipationVisioUncheckedUpdateManyWithoutVisioNestedInput
   }
 
@@ -20327,6 +20371,7 @@ export namespace Prisma {
     dateFin?: DateTimeFieldUpdateOperationsInput | Date | string
     estEnregistre?: BoolFieldUpdateOperationsInput | boolean
     lienEnregistrement?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SuivreCoursUpdateWithoutCoursInput = {

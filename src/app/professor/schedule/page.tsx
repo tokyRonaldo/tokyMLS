@@ -70,8 +70,8 @@ export default function InstructorSchedule() {
   const [lienSchedule, setLienSchedule] = useState<string | null>(null);
   const [descriptionSchedule, setDescriptionSchedule] = useState<string | null>(null);
   const [listSchedule, setListSchedule] = useState<any[] | null>(null);
-  const [openNewVisio, setOpenNewVisio] = useState(false)
-  const [openNewVisioWithDate, setOpenNewVisioWithDate] = useState(false)
+  const [openNewVisio, setOpenNewVisio] = useState(false);
+  const [openVisioRapide, setOpenVisioRapide] = useState(false);
 
   let user= localStorage.getItem('user');
   console.log(user)
@@ -172,8 +172,9 @@ export default function InstructorSchedule() {
     },
   ]
 
-  const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>) =>{
+  const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>,date = null) =>{
     e.preventDefault()
+    console.log(date);
 
     console.log(formateur);
     //c'est un objet
@@ -273,7 +274,7 @@ export default function InstructorSchedule() {
                 </div>
                 <Dialog open={openNewVisio} onOpenChange={setOpenNewVisio}>
                   <DialogTrigger asChild>
-                    <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 shadow-lg">
+                    <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 shadow-lg" onClick={() => setOpenNewVisio(true)}>
                       <Plus className="mr-2 h-5 w-5" />
                       Créer une visioconférence
                     </Button>
@@ -392,62 +393,6 @@ export default function InstructorSchedule() {
                           <Button variant="outline" size="sm" className="border-slate-200">
                             Aujourd'hui
                           </Button>
-                          <Dialog open={openNewVisioWithDate} onOpenChange={setOpenNewVisioWithDate}>
-                            <DialogTrigger asChild>
-                              <Button className="bg-emerald-600 hover:bg-emerald-700 shadow-md" onClick={handleAddVisio}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Nouvelle session
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[525px]">
-                              <DialogHeader>
-                                <DialogTitle>Ajouter une visioconférence</DialogTitle>
-                                <DialogDescription>
-                                  Ajoutez rapidement un lien de visioconférence à une date spécifique.
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                  <Label htmlFor="quick-title">Titre de la session</Label>
-                                  <Input id="quick-title" placeholder="Ex: Cours de mathématiques" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="grid gap-2">
-                                    <Label htmlFor="quick-date">Date</Label>
-                                    <Input id="quick-date" type="date" />
-                                  </div>
-                                  <div className="grid gap-2">
-                                    <Label htmlFor="quick-time">Heure</Label>
-                                    <Input id="quick-time" type="time" defaultValue="10:00" />
-                                  </div>
-                                </div>
-                                <div className="grid gap-2">
-                                  <Label htmlFor="quick-link">Lien de visioconférence</Label>
-                                  <Input id="quick-link" placeholder="https://zoom.us/j/..." />
-                                </div>
-                                <div className="grid gap-2">
-                                  <Label htmlFor="quick-course">Cours (optionnel)</Label>
-                                  <Select>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Sélectionner un cours" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="web-dev">Web Development Fundamentals</SelectItem>
-                                      <SelectItem value="data-science">Data Science Essentials</SelectItem>
-                                      <SelectItem value="ux-design">UX Design Principles</SelectItem>
-                                      <SelectItem value="mobile-dev">Mobile App Development</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              </div>
-                              <DialogFooter>
-                                <Button variant="outline" className="border-slate-200">
-                                  Annuler
-                                </Button>
-                                <Button className="bg-emerald-600 hover:bg-emerald-700">Ajouter</Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
                         </div> 
                       </div>
                     </CardHeader>
@@ -507,43 +452,48 @@ export default function InstructorSchedule() {
 
                               {/* Bouton d'ajout rapide */}
                               {isCurrentMonthDay && (
-                                <Dialog open={openNewVisioWithDate} onOpenChange={setOpenNewVisioWithDate}>
-                                  <DialogTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="w-full mt-2 h-8 text-xs border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
-                                    >
-                                      <Plus className="mr-1 h-3 w-3" />
-                                      Ajouter session
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="sm:max-w-[425px]">
-                                    <DialogHeader>
-                                      <DialogTitle>
-                                        Visioconférence - {format(date, "d MMMM yyyy", { locale: fr })}
-                                      </DialogTitle>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="day-title">Titre</Label>
-                                        <Input id="day-title" placeholder="Titre de la session" />
-                                      </div>
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="day-time">Heure</Label>
-                                        <Input id="day-time" type="time" defaultValue="10:00" />
-                                      </div>
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="day-link">Lien de visioconférence</Label>
-                                        <Input id="day-link" placeholder="https://zoom.us/j/..." />
-                                      </div>
+                                
+                                <Dialog open={openVisioRapide} onOpenChange={setOpenVisioRapide}>
+                                <DialogTrigger asChild>
+                                  <Button variant="outline" size="sm"  className="w-full mt-2 h-8 text-xs border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700">
+                                    <Plus className="mr-1 h-3 w-3" />
+                                    Ajouter session
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                  <DialogHeader>
+                                    <DialogTitle>
+                                      Visioconférence - {format(date, "d MMMM yyyy", { locale: fr })}
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                      Remplissez les détails pour créer une nouvelle session de visioconférence pour vos étudiants.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="grid gap-4 py-4">
+                                    <div className="grid gap-2">
+                                      <Label htmlFor="day-title">Titre</Label>
+                                      <Input id="day-title" placeholder="Titre de la session" 
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setTitreSchedule(e.target.value)}
+                                      />
                                     </div>
-                                    <DialogFooter>
-                                      <Button variant="outline">Annuler</Button>
-                                      <Button className="bg-emerald-600 hover:bg-emerald-700">Ajouter</Button>
-                                    </DialogFooter>
-                                  </DialogContent>
-                                </Dialog>
+                                    <div className="grid gap-2">
+                                      <Label htmlFor="day-time">Heure</Label>
+                                      <Input id="day-time" type="time" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setHeureDebutSchedule(e.target.value)} />
+                                    </div>
+                                    <div className="grid gap-2">
+                                      <Label htmlFor="day-link">Lien de visioconférence</Label>
+                                      <Input id="day-link" placeholder="https://zoom.us/j/..." onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setLienSchedule(e.target.value)} />
+                                    </div>
+                                  </div>
+                                  <DialogFooter>
+                                    <Button variant="outline">Annuler</Button>
+                                    <Button className="bg-emerald-600 hover:bg-emerald-700"
+                                      onClick={(e:React.MouseEvent<HTMLButtonElement>)=>{;handleAddVisio(e,date); }}>
+                                      Ajouter
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
                               )}
                             </div>
                           )

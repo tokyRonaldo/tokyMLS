@@ -182,7 +182,7 @@ export default function InstructorSchedule() {
       'formateur_id' : formateur.id, 
       'titreChedule' : titreSchedule, 
       'coursSchedule' : coursSchedule,      
-      'dateSchedule' : dateSchedule ,   
+      'dateSchedule' : date ? format(new Date(date),'Y-MM-dd') : dateSchedule ,   
       'heureDebutSchedule' : heureDebutSchedule,      
       'heureFinSchedule' : heureFinSchedule, 
       'lienSchedule' : lienSchedule,
@@ -476,6 +476,21 @@ export default function InstructorSchedule() {
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setTitreSchedule(e.target.value)}
                                       />
                                     </div>
+                                    <div className="grid gap-2">
+                                      <Label htmlFor="course">Cours associé</Label>
+                                      <Select onValueChange={(value) => setCoursSchedule(value)}>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Sélectionner un cours" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="web-dev">Web Development Fundamentals</SelectItem>
+                                          <SelectItem value="data-science">Data Science Essentials</SelectItem>
+                                          <SelectItem value="ux-design">UX Design Principles</SelectItem>
+                                          <SelectItem value="mobile-dev">Mobile App Development</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
                                     <div className="grid gap-2">
                                       <Label htmlFor="day-time">Heure</Label>
                                       <Input id="day-time" type="time" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setHeureDebutSchedule(e.target.value)} />

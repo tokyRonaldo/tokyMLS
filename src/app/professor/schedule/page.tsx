@@ -335,10 +335,7 @@ export default function InstructorSchedule() {
                           <Input id="end-time" type="time" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setHeureFinSchedule(e.target.value)} />
                         </div>
                       </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="link">Lien de la visioconférence</Label>
-                        <Input id="link" placeholder="https://" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setLienSchedule(e.target.value)}/>
-                      </div>
+
                       <div className="grid gap-2">
                         <Label htmlFor="description">Description (optionnel)</Label>
                         <Textarea
@@ -495,10 +492,7 @@ export default function InstructorSchedule() {
                                       <Label htmlFor="day-time">Heure</Label>
                                       <Input id="day-time" type="time" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setHeureDebutSchedule(e.target.value)} />
                                     </div>
-                                    <div className="grid gap-2">
-                                      <Label htmlFor="day-link">Lien de visioconférence</Label>
-                                      <Input id="day-link" placeholder="https://zoom.us/j/..." onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setLienSchedule(e.target.value)} />
-                                    </div>
+
                                   </div>
                                   <DialogFooter>
                                     <Button variant="outline">Annuler</Button>

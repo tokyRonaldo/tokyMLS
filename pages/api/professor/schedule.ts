@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from "next-connect";
 import getRawBody from 'raw-body';
+import { format, addDays, subDays, startOfWeek, isSameDay } from "date-fns"
 //import authMiddleware from "../../src/lib/middleware/auth";
 
 import { PrismaClient } from '../../../src/generated/prisma';
@@ -38,10 +39,10 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
 
     console.log('Début :', formatDateForMySQL(dateDebut)); // '2025-06-19 12:00:00'
     console.log('Fin :', formatDateForMySQL(dateFin));     // '2025-06-19 14:00:00'
-    let dataUrl= await getLinkDaily();
+    let dataUrl= await generateJitsiLink(data.titreChedule);
     console.log('etooooo ndrayyy ooooooo')
     console.log(dataUrl)
-/*
+
     //let dateDebut=;
     const schedule= await prisma.visioSession.create({
         data:{
@@ -49,7 +50,7 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
             description:data.descriptionSchedule,
             dateDebut:dateDebut,
             dateFin:dateFin,
-            lienVisio:data.lienSchedule,
+            lienVisio:dataUrl,
             estEnregistre:false,
             lienEnregistrement:data.lienSchedule,
             cours :{
@@ -68,7 +69,7 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
 
         }
     });
-    return res.status(200).json(schedule);*/
+    return res.status(200).json(schedule);
   }catch(e){
     return res.status(500).json({message:'erreur serveur','error' : e.message})
   }
@@ -94,25 +95,12 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
     }
   })
   
-   async function getLinkDaily() {
-    const response = await fetch('https://api.daily.co/v1/rooms', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer aa670eaa59a2a68567952226c45cde053f6017165c678ebd0e4a4a04f9e65080',
-      },
-      body: JSON.stringify({
-        properties: {
-          enable_chat: true,
-          start_video_off: false,
-          start_audio_off: false,
-        },
-      }),
-    });
-  
-    const data = await response.json();
-    return data.url;
-  }
+   async function generateJitsiLink(title:string) {
+
+    
+      const roomName = title.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()
+      return `https://meet.jit.si/${roomName}-${Date.now()}`
+    }
 
 
 // Exportation du routeur par défaut

@@ -20,8 +20,6 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
 
 
   apiRoute.post(async(req,res) => {
-    console.log('heeeeeeeeeere')
-    console.log(req.body)
     const data= req.body
     
     try{
@@ -40,8 +38,6 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
     console.log('Début :', formatDateForMySQL(dateDebut)); // '2025-06-19 12:00:00'
     console.log('Fin :', formatDateForMySQL(dateFin));     // '2025-06-19 14:00:00'
     let dataUrl= await generateJitsiLink(data.titreChedule);
-    console.log('etooooo ndrayyy ooooooo')
-    console.log(dataUrl)
 
     //let dateDebut=;
     const schedule= await prisma.visioSession.create({
@@ -55,8 +51,7 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
             lienEnregistrement:data.lienSchedule,
             cours :{
                 connect:{
-                    //id:data.coursSchedule
-                    id:2
+                    id:data.coursSchedule
                 }
             },
             formateur:{

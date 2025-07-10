@@ -21,8 +21,6 @@ const apiRoute = createRouter({
     try{
       console.log(id);
       if(id != undefined){
-        console.log(id)
-        console.log('aizaaaaaaa2')
         const response= await prisma.suivreCours.create({
           data: {
             cours: {

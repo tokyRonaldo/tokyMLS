@@ -94,17 +94,6 @@ apiRoute.post(async (req, res) => {
 
   const lessons = [];
 
-  /*let index = 0;
-  for ()
-  while (req.body.listLesson[index].title !== undefined) {
-    lessons.push({
-      title: req.body.listLesson[index].title,
-      contenu: req.body.listLesson[index].contenue,
-      documentLesson: req.files.find(f => f.fieldname === `lessonDocument_${index}`),
-      videoLesson: req.files.find(f => f.fieldname === `lessonVideo_${index}`)
-    });
-    index++;
-  }*/
     const listLessonRaw = req.body.listLesson;
     const listLesson = Array.isArray(listLessonRaw)
       ? listLessonRaw
@@ -155,8 +144,21 @@ apiRoute.post(async (req, res) => {
 
 apiRoute.get(async (req, res) => {
   try{
-    const response=  await prisma.cours.findMany();
-    return res.status(200).json(response);
+    const { formateur_id } = req.query;
+    console.log(formateur_id);
+    if(formateur_id && formateur_id != undefined){
+      const response = await prisma.cours.findMany({
+        where: {
+          userId: Number(formateur_id), // ou une variable comme id: myId
+        },
+      })
+      return res.status(200).json(response);
+    }else{
+
+      const response=  await prisma.cours.findMany();
+      return res.status(200).json(response);
+    }
+    
 
   }catch(e){
     return res.status(500).json({message:'erreur serveur','error' : e.message})

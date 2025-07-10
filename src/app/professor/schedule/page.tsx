@@ -70,14 +70,12 @@ export default function InstructorSchedule() {
   const [lienSchedule, setLienSchedule] = useState<string | null>(null);
   const [descriptionSchedule, setDescriptionSchedule] = useState<string | null>(null);
   const [listSchedule, setListSchedule] = useState<any[] | null>(null);
+  const [listCours, setListCours] = useState<any[] | null>(null);
   const [openNewVisio, setOpenNewVisio] = useState(false);
   const [openVisioRapide, setOpenVisioRapide] = useState(false);
 
   let user= localStorage.getItem('user');
-  console.log(user)
-  console.log('tessssssssssssssss')
   const formateur= JSON.parse(user);
-
 
   const monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -132,45 +130,6 @@ export default function InstructorSchedule() {
   const days = getDaysInMonth(currentDate);
 
 
-  // Sample video conference data
-  const videoConferences = [
-    {
-      id: 1,
-      title: "Introduction au développement web",
-      course: "Web Development Fundamentals",
-      date: addDays(currentWeekStart, 1), // Tuesday
-      startTime: "10:00",
-      endTime: "11:30",
-      attendees: 24,
-      platform: "Zoom",
-      link: "https://zoom.us/j/123456789",
-      status: "upcoming",
-    },
-    {
-      id: 2,
-      title: "Consultation de projet",
-      course: "UX Design Principles",
-      date: addDays(currentWeekStart, 3), // Thursday
-      startTime: "14:00",
-      endTime: "15:00",
-      attendees: 12,
-      platform: "Google Meet",
-      link: "https://meet.google.com/abc-defg-hij",
-      status: "upcoming",
-    },
-    {
-      id: 3,
-      title: "Session de questions-réponses",
-      course: "Data Science Essentials",
-      date: addDays(currentWeekStart, 4), // Friday
-      startTime: "16:00",
-      endTime: "17:00",
-      attendees: 18,
-      platform: "Microsoft Teams",
-      link: "https://teams.microsoft.com/l/meetup-join/...",
-      status: "upcoming",
-    },
-  ]
 
   const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>,date = null) =>{
     e.preventDefault()
@@ -206,22 +165,13 @@ export default function InstructorSchedule() {
       // Typage de la réponse attendue (exemple)
       const data: any = await response.json();
       setOpenNewVisio(false)
-      /*if(data.lesson.userLessons && data.lesson.userLessons.length > 0 ){
-        const userLesson = (data.lesson.userLessons as any[])?.find((ul) => ul.userId === 1);
-        if (userLesson && userLesson.isFinished) {
-          // Tu peux accéder à userLesson.isFinished, etc.
-          setIsCompleted(true)
-        }
-      }
-      setLessonDetail(data.lesson);
-      setListLesson(data.listLesson);*/
       console.log(data)
     } catch (error: any) {
       console.error('Erreur fetch :', error.message);
     }
   }
 
-  const handleListeCours= async()=>{
+  const handleListeSchedule= async()=>{
     const response= await fetch(`/api/professor/schedule?formateur_id=${formateur.id}`, {
         method: 'GET',
         headers: {
@@ -237,8 +187,28 @@ export default function InstructorSchedule() {
       setListSchedule(result);
   }
 
+  const handleListeCours= async()=>{
+
+      const response= await fetch(`/api/cours?formateur_id=${formateur.id}`,{
+        method : 'GET',
+        headers :{
+          "Content-Type": "application/json",
+          //'Authorization' : 'Bearer ' + token
+        }
+      });
+      if(!response.ok){
+        console.log('erreur')
+        return;
+      }
+      let result = await response.json();
+      console.log(result);
+      setListCours(result);
+  }
+
+
   useEffect(()=>{
     console.log(localStorage.getItem('token'));
+    handleListeSchedule();
     handleListeCours();
   },[])
 
@@ -298,10 +268,12 @@ export default function InstructorSchedule() {
                             <SelectValue placeholder="Sélectionner un cours" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="web-dev">Web Development Fundamentals</SelectItem>
-                            <SelectItem value="data-science">Data Science Essentials</SelectItem>
-                            <SelectItem value="ux-design">UX Design Principles</SelectItem>
-                            <SelectItem value="mobile-dev">Mobile App Development</SelectItem>
+
+                            <SelectItem  value="test">test</SelectItem>
+                            {listCours?.map((cours,i)=>(
+
+                            <SelectItem key={cours.id} value={cours.id}>{cours.nom}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
@@ -480,10 +452,10 @@ export default function InstructorSchedule() {
                                           <SelectValue placeholder="Sélectionner un cours" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="web-dev">Web Development Fundamentals</SelectItem>
-                                          <SelectItem value="data-science">Data Science Essentials</SelectItem>
-                                          <SelectItem value="ux-design">UX Design Principles</SelectItem>
-                                          <SelectItem value="mobile-dev">Mobile App Development</SelectItem>
+                                            {listCours?.map((cours,i)=>(
+
+                                            <SelectItem key={cours.id} value={cours.id}>{cours.nom}</SelectItem>
+                                            ))}                                        
                                         </SelectContent>
                                       </Select>
                                     </div>

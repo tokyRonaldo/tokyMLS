@@ -58,7 +58,8 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
                 connect:{
                     id:data.formateur_id
                 }
-            }
+            },
+            status : "upcoming"
 
 
 
@@ -69,6 +70,53 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
     return res.status(500).json({message:'erreur serveur','error' : e.message})
   }
   })
+
+  apiRoute.delete(async(req,res) => {
+    
+    try{
+      
+      const { id } = req.body;
+      console.log('test iccccccccccccciiiiiiiii')
+
+      // 1. Trouver la session pour récupérer le formateurId
+      const session = await prisma.visioSession.findFirst({
+        where: {
+          id: Number(id),
+        },
+        select: {
+          formateurId: true, // ✅ on ne prend que l'ID du formateur
+        },
+      });
+
+      if (!session) {
+        return res.status(404).json({ message: 'Session non trouvée' });
+      }
+
+      const { formateurId } = session;
+
+      // 2. Supprimer la session
+      await prisma.visioSession.delete({
+        where: {
+          id: Number(id),
+        },
+      });
+
+      // 3. Récupérer tous les cours de ce formateur
+      const cours = await prisma.visioSession.findMany({
+        where: {
+          formateurId: formateurId,
+        },
+        include: {
+          cours: true,
+        },
+      });
+
+      return res.status(200).json(cours);
+  }catch(e){
+    return res.status(500).json({message:'erreur serveur','error' : e.message})
+  }
+  })
+
 
   apiRoute.get(async (req, res) => {
     const formateur_id= req.query.formateur_id;

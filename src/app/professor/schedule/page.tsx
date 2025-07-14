@@ -53,6 +53,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useEffect, useState } from "react"
 
 
+
 export default function InstructorSchedule() {
   // Current date for the calendar
   const today = new Date()
@@ -73,6 +74,7 @@ export default function InstructorSchedule() {
   const [listCours, setListCours] = useState<any[] | null>(null);
   const [openNewVisio, setOpenNewVisio] = useState(false);
   const [openVisioRapide, setOpenVisioRapide] = useState(false);
+  const [openDropMenuId, setOpenDropMenuId] = useState(useState<number | null>(null));
 
   let user= localStorage.getItem('user');
   const formateur= JSON.parse(user);
@@ -203,6 +205,34 @@ export default function InstructorSchedule() {
       let result = await response.json();
       console.log(result);
       setListCours(result);
+  }
+
+  const handleDeleteVisio = async (e : React.MouseEvent<HTMLButtonElement>,id:any) =>{
+    e.preventDefault()
+
+    console.log(formateur);
+    //c'est un objet
+    try {
+      const response = await fetch(`/api/professor/schedule?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: id }),
+      });
+  
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération du cours');
+        return;
+      }
+  
+      // Typage de la réponse attendue (exemple)
+      const data: any = await response.json();
+      setOpenDropMenuId(null)
+      console.log(data)
+    } catch (error: any) {
+      console.error('Erreur fetch :', error.message);
+    }
   }
 
 
@@ -469,7 +499,7 @@ export default function InstructorSchedule() {
                                   <DialogFooter>
                                     <Button variant="outline">Annuler</Button>
                                     <Button className="bg-emerald-600 hover:bg-emerald-700"
-                                      onClick={(e:React.MouseEvent<HTMLButtonElement>)=>{;handleAddVisio(e,date); }}>
+                                      onClick={(e:React.MouseEvent<HTMLButtonElement>)=>{handleAddVisio(e,date); }}>
                                       Ajouter
                                     </Button>
                                   </DialogFooter>
@@ -569,7 +599,10 @@ export default function InstructorSchedule() {
                                 </Badge>
                               </TableCell>
                               <TableCell className="text-right">
-                                <DropdownMenu>
+                                <DropdownMenu 
+                                 open={openDropMenuId === conference.id}
+                                 onOpenChange={(open) => setOpenDropMenuId(open ? conference.id : null)}
+                                >
                                   <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon" className="h-8 w-8">
                                       <MoreHorizontal className="h-4 w-4" />
@@ -577,15 +610,18 @@ export default function InstructorSchedule() {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuItem>
-                                      <Link href={`/instructor/schedule/${conference.id}`} className="flex w-full">
+                                      <Link href='#' className="flex w-full">
                                         Voir les détails
                                       </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>Modifier</DropdownMenuItem>
-                                    <DropdownMenuItem>Démarrer</DropdownMenuItem>
-                                    <DropdownMenuItem>Envoyer un rappel</DropdownMenuItem>
+                                    <DropdownMenuItem  >Modifier</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link href={`${conference.lienVisio ?? '#'}`} className="flex w-full">
+                                        Démarrer
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-red-600">Annuler</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-red-600" onClick={(e:React.MouseEvent<HTMLButtonElement>) => {handleDeleteVisio(e,conference.id)}}>Annuler</DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </TableCell>

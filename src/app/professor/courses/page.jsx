@@ -117,7 +117,7 @@ export default function CoursesPage() {
                   <h1 className="text-3xl font-bold tracking-tight">My Courses</h1>
                   <p className="text-slate-500">Manage and organize your course content</p>
                 </div>
-                <Link href="/instructor/course/new/edit">
+                <Link href="/professor/courses/new">
                   <Button className="bg-emerald-600 hover:bg-emerald-700">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Create New Course

@@ -147,7 +147,7 @@ model VisioSession {
   dateFin            DateTime
   estEnregistre      Boolean  @default(false)
   lienEnregistrement String?
-  status             String?
+  status             String @default("upcoming")
 
   cours          Cours                @relation(fields: [coursId], references: [id])
   formateur      User                 @relation("FormateurRelation", fields: [formateurId], references: [id])

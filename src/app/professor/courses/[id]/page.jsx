@@ -42,6 +42,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
+import { use } from 'react';
+import { useParams } from 'next/navigation';
+import '../../../loading.css'
+
 import { useEffect,useState } from "react"
 
 
@@ -66,7 +70,11 @@ export default function NewCourse() {
   const [coursVideo, setCoursVideo] = useState('');
   const [coursVideoPreview, setCoursVideoPreview] = useState(null);
   const [coursSubtitle, setCoursSubtitle] = useState('');
+  const [loading, setLoading] = useState(false);
   const token= localStorage.getItem('token');
+
+  const params = useParams();
+  const id = params.id;
 
   const lessonArray=[
     { title: "HTML Basics", type: "text", completed: true },
@@ -76,6 +84,9 @@ export default function NewCourse() {
   ]
   useEffect(()=>{
     //setListLesson(lessonArray)
+    if(id){
+        handleGetCours(id);
+    }
   },[])
 
   const handleFileChange = (e)=>{
@@ -86,6 +97,51 @@ export default function NewCourse() {
       console.log('Fichier sélectionné :', file.name);
     }
 
+  }
+
+  const handleGetCours = async (id)=>{
+
+    try{
+        const fetchApi= await fetch(`/api/professor/cours?id=${id}`,{
+            method : 'GET',
+            headers: {
+              //"Content-Type": "application/json",
+              'Authorization' : 'Bearer ' + token
+             }
+        })
+        if (!fetchApi.ok) {
+          console.error('Erreur lors de la récupération du cours');
+          return;
+        }
+
+        const resp= await fetchApi.json();
+        
+        const [coursTitle, setCoursTitle] = useState('');
+        const [coursDescription, setCoursDescription] = useState('');
+        const [coursLevel, setCoursLevel] = useState('');
+        const [coursContent, setCoursContent] = useState('');
+        const [coursCategory, setCoursCategory] = useState('');
+        const [coursImage, setCoursImage] = useState('');
+        const [coursImagePreview, setCoursImagePreview] = useState(null);
+        const [coursVideo, setCoursVideo] = useState('');
+        const [coursVideoPreview, setCoursVideoPreview] = useState(null);
+        const [coursSubtitle, setCoursSubtitle] = useState('');
+        setCoursTitle(resp.nom);
+        setCoursDescription(resp.description);
+        setCoursLevel(resp.level);
+        setCoursSubtitle(resp.sousTitre);
+        setCoursImagePreview(`/uploads/${resp.image}`);
+        setCoursImage('resp.image');
+        setCoursVideoPreview(`/uploads/${resp.image}`);
+        setCoursVideo('resp.image');
+        /*setListLesson(prev => [
+          ...prev,
+          { titleLesson: titleLesson, descriptionLesson: descriptionLesson, documentLesson: documentLesson,videoLesson:videoLesson }
+        ]);*/
+        console.log(resp);
+    }catch(e){
+        console.error(e);
+    }
   }
 
   const handleFileChangeCours = (e)=>{
@@ -163,6 +219,7 @@ export default function NewCourse() {
   
 
   const handleSubmitCours = async () => {
+    console.log('subbbbmiiiiiiiiiiit')
     try {
       const formData = new FormData();
   

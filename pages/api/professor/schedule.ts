@@ -76,7 +76,6 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
     try{
       
       const { id } = req.body;
-      console.log('test iccccccccccccciiiiiiiii')
 
       // 1. Trouver la session pour récupérer le formateurId
       const session = await prisma.visioSession.findFirst({

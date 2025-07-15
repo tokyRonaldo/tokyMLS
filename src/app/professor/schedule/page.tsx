@@ -50,8 +50,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import GlobalLoader from "../../../components/GlobalLoader" // 👈 à adapter selon ton chemin
 import { useEffect, useState } from "react"
-
+import '../../loading.css'
 
 
 export default function InstructorSchedule() {
@@ -74,7 +75,8 @@ export default function InstructorSchedule() {
   const [listCours, setListCours] = useState<any[] | null>(null);
   const [openNewVisio, setOpenNewVisio] = useState(false);
   const [openVisioRapide, setOpenVisioRapide] = useState(false);
-  const [openDropMenuId, setOpenDropMenuId] = useState(useState<number | null>(null));
+  const [openDropMenuId, setOpenDropMenuId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
   let user= localStorage.getItem('user');
   const formateur= JSON.parse(user);
@@ -135,6 +137,7 @@ export default function InstructorSchedule() {
 
   const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>,date = null) =>{
     e.preventDefault()
+    setLoading(true);
     console.log(date);
 
     console.log(formateur);
@@ -158,7 +161,7 @@ export default function InstructorSchedule() {
         },
         body: JSON.stringify(dataVisio) //transforme en json text '{"nom": "Bob", "email": "bob@example.com"}'
       });
-  
+      
       if (!response.ok) {
         console.error('Erreur lors de la récupération du cours');
         return;
@@ -167,9 +170,11 @@ export default function InstructorSchedule() {
       // Typage de la réponse attendue (exemple)
       const data: any = await response.json();
       setOpenNewVisio(false)
-      console.log(data)
+      setLoading(false)
+
     } catch (error: any) {
       console.error('Erreur fetch :', error.message);
+      setLoading(false)
     }
   }
 
@@ -209,6 +214,7 @@ export default function InstructorSchedule() {
 
   const handleDeleteVisio = async (e : React.MouseEvent<HTMLButtonElement>,id:any) =>{
     e.preventDefault()
+    setLoading(true)
 
     console.log(formateur);
     //c'est un objet
@@ -229,9 +235,10 @@ export default function InstructorSchedule() {
       // Typage de la réponse attendue (exemple)
       const data: any = await response.json();
       setOpenDropMenuId(null)
-      console.log(data)
+      setLoading(false)
     } catch (error: any) {
       console.error('Erreur fetch :', error.message);
+      setLoading(false)
     }
   }
 
@@ -243,7 +250,12 @@ export default function InstructorSchedule() {
   },[])
 
   return (
-        <main className="flex-1 bg-slate-50">
+        <main className="flex-1 bg-slate-50" style={{position : 'relative'}}>
+          {loading && (
+            <div className="loading flex items-center justify-center inset-0" >
+                <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+            </div>
+          )}
           <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -311,20 +323,6 @@ export default function InstructorSchedule() {
                         <div className="grid gap-2">
                           <Label htmlFor="date">Date</Label>
                           <Input id="date" type="date" onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setDateSchedule(e.target.value)}/>
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="platform">Plateforme</Label>
-                          <Select>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Plateforme" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="zoom">Zoom</SelectItem>
-                              <SelectItem value="meet">Google Meet</SelectItem>
-                              <SelectItem value="teams">Microsoft Teams</SelectItem>
-                              <SelectItem value="other">Autre</SelectItem>
-                            </SelectContent>
-                          </Select>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -555,8 +553,6 @@ export default function InstructorSchedule() {
                             <TableHead>Cours</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead>Horaire</TableHead>
-                            <TableHead>Participants</TableHead>
-                            <TableHead>Plateforme</TableHead>
                             <TableHead>Statut</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                           </TableRow>
@@ -566,7 +562,7 @@ export default function InstructorSchedule() {
                             <TableRow key={conference.id}>
                               <TableCell className="font-medium">
                                 <Link href={`/instructor/schedule/${conference.id}`} className="hover:underline">
-                                  {conference.title}
+                                  {conference.titre}
                                 </Link>
                               </TableCell>
                               <TableCell>{conference.cours.nom}</TableCell>
@@ -574,8 +570,6 @@ export default function InstructorSchedule() {
                               <TableCell>
                                 {format(new Date(conference.dateDebut), "HH:mm")} - {format(new Date(conference.dateFin), "HH:mm")}
                               </TableCell>
-                              <TableCell></TableCell>
-                              <TableCell></TableCell>
                               <TableCell>
                                 <Badge
                                   variant="outline"
@@ -621,7 +615,7 @@ export default function InstructorSchedule() {
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-red-600" onClick={(e:React.MouseEvent<HTMLButtonElement>) => {handleDeleteVisio(e,conference.id)}}>Annuler</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-red-600" onClick={(e:React.MouseEvent<HTMLButtonElement>) => {handleDeleteVisio(e,conference.id)}}>Supprimer</DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </TableCell>

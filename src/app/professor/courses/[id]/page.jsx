@@ -116,29 +116,25 @@ export default function NewCourse() {
 
         const resp= await fetchApi.json();
         
-        const [coursTitle, setCoursTitle] = useState('');
-        const [coursDescription, setCoursDescription] = useState('');
-        const [coursLevel, setCoursLevel] = useState('');
-        const [coursContent, setCoursContent] = useState('');
-        const [coursCategory, setCoursCategory] = useState('');
-        const [coursImage, setCoursImage] = useState('');
-        const [coursImagePreview, setCoursImagePreview] = useState(null);
-        const [coursVideo, setCoursVideo] = useState('');
-        const [coursVideoPreview, setCoursVideoPreview] = useState(null);
-        const [coursSubtitle, setCoursSubtitle] = useState('');
         setCoursTitle(resp.nom);
         setCoursDescription(resp.description);
         setCoursLevel(resp.level);
         setCoursSubtitle(resp.sousTitre);
         setCoursImagePreview(`/uploads/${resp.image}`);
-        setCoursImage('resp.image');
-        setCoursVideoPreview(`/uploads/${resp.image}`);
-        setCoursVideo('resp.image');
-        /*setListLesson(prev => [
-          ...prev,
-          { titleLesson: titleLesson, descriptionLesson: descriptionLesson, documentLesson: documentLesson,videoLesson:videoLesson }
-        ]);*/
+        setCoursImage(`/uploads/${resp.image}`);
+        setCoursVideoPreview(`/uploads/${resp.video}`);
+        setCoursVideo(`/uploads/${resp.image}`);
+        const arrayLesson = resp.lessons.map(lesson => ({
+          titleLesson: lesson.title,
+          descriptionLesson: lesson.contenu,
+          documentLesson: `/uploads/${lesson.document}`,
+          videoLesson: `/uploads/${lesson.videoUrl}`
+        }));
+        setListLesson(arrayLesson)
+
         console.log(resp);
+
+
     }catch(e){
         console.error(e);
     }

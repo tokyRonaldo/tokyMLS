@@ -42,6 +42,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
+import Loading from '../../../loading'
+
 import { useEffect,useState } from "react"
 
 
@@ -66,6 +68,7 @@ export default function NewCourse() {
   const [coursVideo, setCoursVideo] = useState('');
   const [coursVideoPreview, setCoursVideoPreview] = useState(null);
   const [coursSubtitle, setCoursSubtitle] = useState('');
+  const [loading, setLoading] = useState(false);
   const token= localStorage.getItem('token');
 
   const lessonArray=[
@@ -163,6 +166,7 @@ export default function NewCourse() {
   
 
   const handleSubmitCours = async () => {
+    setLoading(true)
     try {
       const formData = new FormData();
   
@@ -211,16 +215,23 @@ export default function NewCourse() {
           'Authorization' : 'Bearer ' + token
          }
       });
-  
+      
       const resp = await response.json();
+      setLoading(false)
+
       console.log(resp);
     } catch (error) {
+      setLoading(false)
+
       console.error("Erreur lors de l'envoi du cours :", error);
     }
   };
 
     return (
       <div className="flex min-h-screen w-full flex-col">
+        {loading && (
+          <Loading/>
+        )}
         <div className="flex flex-col sm:flex-row">
                     {/* Main content */}
         <main className="flex-1 bg-slate-50">

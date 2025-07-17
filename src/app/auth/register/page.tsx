@@ -18,11 +18,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+import Loading from '../../loading'
+import toast from 'react-hot-toast';
+
 export default function RegisterPage() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("")
-  const [userType, setUserType] = useState("student")
+  const [userType, setUserType] = useState("etudiant")
 
   interface JwtPayload {
     id: number;
@@ -33,7 +36,8 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsLoading(true)
+    setLoading(true)
+
     setError("")
 
     const formData = new FormData(e.currentTarget)
@@ -58,13 +62,13 @@ export default function RegisterPage() {
       // Validation simple
       if (password !== confirmPassword) {
         setError("Les mots de passe ne correspondent pas")
-        setIsLoading(false)
+        setLoading(false)
         return
       }
 
       if (!acceptTerms) {
         setError("Vous devez accepter les conditions d'utilisation")
-        setIsLoading(false)
+        setLoading(false)
         return
       }
 
@@ -87,6 +91,8 @@ export default function RegisterPage() {
 
       })
       if(reponse.ok){
+      toast.success('Données chargées avec succès');
+
         const result = await reponse.json();
         const decoded = jwtDecode<JwtPayload>(result.token);
         const userDetail = {
@@ -98,24 +104,29 @@ export default function RegisterPage() {
         localStorage.setItem('user',JSON.stringify(userDetail));
         console.log(decoded);
         // Redirection en fonction du type d'utilisateur
-        if (userType === "edudiant") {
-          router.push("/")
+        if (userType === "etudiant") {
+          router.push("/student/dashboard")
         } else {
-          router.push("/instructor/dashboard")
+          router.push("/professor/dashboard")
         }
       }
 
 
-    } catch (err) {
+    } catch (err : any) {
       setError("Une erreur est survenue lors de l'inscription")
+      toast.error(err.message || 'Une erreur est survenue');
+
       console.error(err)
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-slate-50 p-4">
+      {loading && (
+          <Loading/>
+      )}
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex items-center gap-2 text-2xl font-bold">
@@ -201,8 +212,8 @@ export default function RegisterPage() {
                   </Link>
                 </Label>
               </div>
-              <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={isLoading}>
-                {isLoading ? (
+              <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={loading}>
+                {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Inscription en cours...

@@ -120,15 +120,19 @@ export default function NewCourse() {
         setCoursDescription(resp.description);
         setCoursLevel(resp.level);
         setCoursSubtitle(resp.sousTitre);
-        setCoursImagePreview(`/uploads/${resp.image}`);
-        setCoursImage(`/uploads/${resp.image}`);
-        setCoursVideoPreview(`/uploads/${resp.video}`);
-        setCoursVideo(`/uploads/${resp.image}`);
+        if(resp.image && resp.image!= ''){
+          setCoursImagePreview(`/uploads/${resp.image}`);
+          setCoursImage(resp.image);
+        }
+        if(resp.video && resp.video!= ''){
+          setCoursVideoPreview(`/uploads/${resp.video}`);
+          setCoursVideo(resp.image);
+        }
         const arrayLesson = resp.lessons.map(lesson => ({
           titleLesson: lesson.title,
           descriptionLesson: lesson.contenu,
-          documentLesson: `/uploads/${lesson.document}`,
-          videoLesson: `/uploads/${lesson.videoUrl}`
+          documentLesson: lesson.document,
+          videoLesson: lesson.videoUrl
         }));
         setListLesson(arrayLesson)
 
@@ -139,6 +143,7 @@ export default function NewCourse() {
         console.error(e);
     }
   }
+  
 
   const handleFileChangeCours = (e)=>{
     e.preventDefault();
@@ -273,35 +278,12 @@ export default function NewCourse() {
   };
 
     return (
-      <div className="flex min-h-screen w-full flex-col">
-        <div className="flex flex-col sm:flex-row">
-                    {/* Main content */}
-        <main className="flex-1 bg-slate-50">
-          <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild className="text-slate-500 hover:text-slate-900">
-                  <Link href="/instructor/courses">
-                    <ArrowLeft className="h-4 w-4" />
-                    <span className="sr-only">Back</span>
-                  </Link>
-                </Button>
-                <h2 className="font-medium">Edit Course</h2>
+           <>
+            {loading && (
+              <div className="loading flex items-center justify-center inset-0" >
+                  <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm">
-                JD
-              </div>
-            </div>
-          </div>
-
+            )}
           <div className="p-6">
             <div className="flex flex-col gap-6 md:gap-8 max-w-6xl mx-auto">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -451,7 +433,7 @@ export default function NewCourse() {
                           <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
                             <div className="bg-slate-100 rounded-md h-[150px] flex items-center justify-center mb-4">
                               
-                              {coursVideoPreview ? (
+                              {(coursVideoPreview && coursVideoPreview!= '') ? (
                                 <video
                                   controls
                                   src={coursVideoPreview}
@@ -695,9 +677,7 @@ export default function NewCourse() {
               </Tabs>
             </div>
           </div>
-        </main>
+        </>
 
-        </div>
-    </div>
   )
 }

@@ -25,7 +25,8 @@ CREATE TABLE `Cours` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `userId` INTEGER NOT NULL,
-    `categoryId` INTEGER NOT NULL,
+    `categoryId` INTEGER NULL,
+    `theCategories` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -60,6 +61,7 @@ CREATE TABLE `UserLesson` (
     `lessonId` INTEGER NOT NULL,
     `isFinished` BOOLEAN NOT NULL DEFAULT false,
 
+    UNIQUE INDEX `UserLesson_userId_lessonId_key`(`userId`, `lessonId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -115,6 +117,7 @@ CREATE TABLE `VisioSession` (
     `dateFin` DATETIME(3) NOT NULL,
     `estEnregistre` BOOLEAN NOT NULL DEFAULT false,
     `lienEnregistrement` VARCHAR(191) NULL,
+    `status` VARCHAR(191) NOT NULL DEFAULT 'upcoming',
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -144,7 +147,7 @@ CREATE TABLE `Category` (
 ALTER TABLE `Cours` ADD CONSTRAINT `Cours_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Cours` ADD CONSTRAINT `Cours_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Cours` ADD CONSTRAINT `Cours_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Lesson` ADD CONSTRAINT `Lesson_coursId_fkey` FOREIGN KEY (`coursId`) REFERENCES `Cours`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -142,7 +142,8 @@ exports.Prisma.CoursScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
-  categoryId: 'categoryId'
+  categoryId: 'categoryId',
+  theCategories: 'theCategories'
 };
 
 exports.Prisma.LessonScalarFieldEnum = {
@@ -249,7 +250,8 @@ exports.Prisma.CoursOrderByRelevanceFieldEnum = {
   level: 'level',
   content: 'content',
   image: 'image',
-  video: 'video'
+  video: 'video',
+  theCategories: 'theCategories'
 };
 
 exports.Prisma.LessonOrderByRelevanceFieldEnum = {

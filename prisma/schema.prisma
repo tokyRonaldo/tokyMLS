@@ -45,6 +45,7 @@ model Cours {
   updatedAt   DateTime @default(now())
   userId   Int
   categoryId Int?
+  theCategories  String?
 
   user     User   @relation(fields: [userId], references: [id])
   lessons   Lesson[]

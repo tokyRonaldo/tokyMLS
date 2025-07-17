@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/dialog"
 
 import Loading from '../../../loading'
+import toast from 'react-hot-toast';
 
 import { useEffect,useState } from "react"
 
@@ -215,51 +216,32 @@ export default function NewCourse() {
           'Authorization' : 'Bearer ' + token
          }
       });
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération du cours');
+        return;
+      }
       
       const resp = await response.json();
       setLoading(false)
+      toast.success('Données chargées avec succès');
 
       console.log(resp);
     } catch (error) {
       setLoading(false)
-
+      toast.error(err.message || 'Une erreur est survenue');
       console.error("Erreur lors de l'envoi du cours :", error);
     }
   };
 
     return (
-      <div className="flex min-h-screen w-full flex-col">
-        {loading && (
-          <Loading/>
-        )}
-        <div className="flex flex-col sm:flex-row">
-                    {/* Main content */}
-        <main className="flex-1 bg-slate-50">
-          <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild className="text-slate-500 hover:text-slate-900">
-                  <Link href="/instructor/courses">
-                    <ArrowLeft className="h-4 w-4" />
-                    <span className="sr-only">Back</span>
-                  </Link>
-                </Button>
-                <h2 className="font-medium">Edit Course</h2>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm">
-                JD
-              </div>
-            </div>
-          </div>
 
+        <>
+            {loading && (
+              <div className="loading flex items-center justify-center inset-0" >
+                  <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+              </div>
+            )}
+  
           <div className="p-6">
             <div className="flex flex-col gap-6 md:gap-8 max-w-6xl mx-auto">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -294,7 +276,7 @@ export default function NewCourse() {
                     value="curriculum"
                     className="rounded-md flex-initial data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600"
                   >
-                    Curriculum
+                    Lessons
                   </TabsTrigger>
                 </TabsList>
 
@@ -461,7 +443,7 @@ export default function NewCourse() {
                     <Card className="border-none shadow-sm">
                       <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                          <CardTitle>Course Curriculum</CardTitle>
+                          <CardTitle>Course Lessons</CardTitle>
                           <CardDescription>Organize your course content into modules and lessons</CardDescription>
                         </div>
                         <Dialog open={showModal} onOpenChange={setShowModal}>
@@ -653,9 +635,7 @@ export default function NewCourse() {
               </Tabs>
             </div>
           </div>
-        </main>
+        </>
 
-        </div>
-    </div>
   )
 }

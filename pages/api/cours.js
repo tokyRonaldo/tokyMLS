@@ -53,8 +53,6 @@ apiRoute.use(upload.any());
 
 // Gestion de la requête POST
 apiRoute.post(async (req, res) => {
-  console.log(req.files.coursImage);
-  console.log('req.fileseeeeeee');
   try {
     const {
       coursTitle,
@@ -67,15 +65,10 @@ apiRoute.post(async (req, res) => {
   // Récupération sécurisée des fichiers
   const coursImageFile = req.files.find(f => f.fieldname === "coursImage");
   const coursVideoFile = req.files.find(f => f.fieldname === "coursVideo");
-  console.log(coursImageFile)
-  console.log('courssssss imageeeeee fileeeeeeeeee');
 
   const coursImage = coursImageFile ? coursImageFile.filename : "";
   const coursVideo = coursVideoFile ? coursVideoFile.filename : "";
     //console.log(Object.keys(prisma));
-    console.log(coursImage)
-    console.log(coursVideo)
-    console.log('courssssssssssssssssssssssssssssssss')
 
   // Création du cours avec l'ID de l'utilisateur
   const cours = await prisma.cours.create({
@@ -90,6 +83,7 @@ apiRoute.post(async (req, res) => {
           id: 1
         }
       },
+      theCategories : coursCategory,
       sousTitre: coursSubtitle || "",
       image: coursImage,
       video: coursVideo,

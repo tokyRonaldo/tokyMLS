@@ -1,5 +1,5 @@
 'use client'
-import React from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import {
   BookOpen,
@@ -14,6 +14,7 @@ import {
   TrendingUp,
   MessageSquare,
   BarChart3,
+  LogOut
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -21,11 +22,41 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Progress } from "@/components/ui/progress"
 import { UserProvider } from "@/app/professor/context/UserContext"
 import { Children, cloneElement, isValidElement } from 'react'
+import { useRouter } from "next/navigation"
+
 
 export default function InstructorDashboardLayout({children}) {
+    const [showDetail,setShowDetail]=useState(false)
+  const router = useRouter()
+
+    const token= localStorage.getItem('token');
+    let user= localStorage.getItem('user');
+    const formateur= JSON.parse(user);
+
+    async function handleLogout(){
+        localStorage.removeItem('token');
+        router.push("/student/dashboard")
+
+    }
+
   return (
           
     <UserProvider>
+        <style jsx>{`
+            .detail-user {
+            position: absolute;
+            top: 30px;
+            right: 2px;
+            color: white;
+            background-color: #00bc7d;
+            z-index: 100000000;
+            width: 100px;
+            height: auto;
+            border-radius: 10%;
+            padding: 10px 10px 15px 10px;
+
+            }
+      `}</style>
         <div className="flex min-h-screen w-full flex-col">
         <div className="flex flex-col sm:flex-row">
             {/* Sidebar */}
@@ -94,7 +125,44 @@ export default function InstructorDashboardLayout({children}) {
             </div>
 
             {/* Main content */}
-            {children}
+            <main className="flex-1 bg-slate-50" style={{position : 'relative'}}>
+
+                <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" className="md:hidden">
+                        <Menu className="h-5 w-5" />
+                    </Button>
+                    <h2 className="font-medium">Schedule</h2>
+                    </div>
+                    <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="icon">
+                        <Bell className="h-5 w-5" />
+                    </Button>
+                    <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm cursor-pointer" style={{position: 'relative'}}
+                    onClick={()=>{
+                        setShowDetail(!showDetail)
+                    }}
+                    >
+                        JD
+                        {showDetail && 
+                            <div className="detail-user" >
+                                <div className="user-name">
+                                    
+                                    <p className="font-medium text-sm mb-2 break-words">
+                                        {formateur?.name || 'USER'}
+                                    </p>
+                                </div>
+                                <p className="user-logout flex gap-1 items-center hover:opacity-60" onClick={handleLogout}>
+                                    <LogOut size={15} />
+                                    Logout
+                                </p>
+                            </div>
+                        }
+                    </div>
+                    </div>
+                </div>
+                {children}
+            </main>
         </div>
         </div>
     </UserProvider>

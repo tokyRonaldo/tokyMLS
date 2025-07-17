@@ -32,18 +32,19 @@ model User {
 }
 
 model Cours {
-  id          Int      @id @default(autoincrement())
-  nom         String   @db.VarChar(255)
-  sousTitre   String   @db.VarChar(255)
-  description String?
-  level       String?  @db.VarChar(50)
-  content     String?
-  image       String?  @db.VarChar(255)
-  video       String?  @db.VarChar(255)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-  userId      Int
-  categoryId  Int?
+  id            Int      @id @default(autoincrement())
+  nom           String   @db.VarChar(255)
+  sousTitre     String   @db.VarChar(255)
+  description   String?
+  level         String?  @db.VarChar(50)
+  content       String?
+  image         String?  @db.VarChar(255)
+  video         String?  @db.VarChar(255)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+  userId        Int
+  categoryId    Int?
+  theCategories String?
 
   user     User           @relation(fields: [userId], references: [id])
   lessons  Lesson[]
@@ -145,7 +146,7 @@ model VisioSession {
   dateFin            DateTime
   estEnregistre      Boolean  @default(false)
   lienEnregistrement String?
-  status             String?
+  status             String   @default("upcoming")
 
   cours          Cours                @relation(fields: [coursId], references: [id])
   formateur      User                 @relation("FormateurRelation", fields: [formateurId], references: [id])

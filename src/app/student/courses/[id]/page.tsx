@@ -48,6 +48,7 @@ export default function CoursePage({params}: CoursePageProps) {
   }
 
   const [coursDetail,setCoursDetail] = useState<Cours | null>(null);
+  const [loading, setLoading] = useState(false)
 
 
     async function getCoursDetails(): Promise<void> {
@@ -78,34 +79,12 @@ export default function CoursePage({params}: CoursePageProps) {
     return (
       
 
-        <main className="flex-1 bg-slate-50">
-          <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild className="text-slate-500 hover:text-slate-900">
-                  <Link href="/courses">
-                    <ArrowLeft className="h-4 w-4" />
-                    <span className="sr-only">Back</span>
-                  </Link>
-                </Button>
-                <h2 className="font-medium">Course Details</h2>
+        <>
+                      {loading && (
+              <div className="loading flex items-center justify-center inset-0" >
+                  <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <Link href="/profile">
-                <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm cursor-pointer">
-                  A
-                </div>
-              </Link>
-            </div>
-          </div>
-
+            )}
           <div className="p-6">
             <div className="flex flex-col gap-6 md:gap-8 max-w-6xl mx-auto">
               <h1 className="text-2xl font-bold tracking-tight">Web Development Fundamentals</h1>
@@ -270,7 +249,7 @@ export default function CoursePage({params}: CoursePageProps) {
               </div>
             </div>
           </div>
-        </main>
+        </>
   )
 }
 

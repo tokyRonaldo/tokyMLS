@@ -90,26 +90,13 @@ export default function CoursesPage() {
 
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <div className="flex flex-col sm:flex-row">
-      <main className="flex-1 bg-slate-50">
-          <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-              <h2 className="font-medium">Course Management</h2>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm">
-                JD
-              </div>
-            </div>
-          </div>
 
+      <>
+              {loading && (
+              <div className="loading flex items-center justify-center inset-0" >
+                  <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+              </div>
+            )}
           <div className="p-6">
             <div className="flex flex-col gap-6 md:gap-8 max-w-6xl mx-auto">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -359,8 +346,7 @@ export default function CoursesPage() {
               </Tabs>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+        </>
+
   )
 }

@@ -81,7 +81,7 @@ try{
       username,
       email,
       password: hashedPassword,
-      role :'etudiant'
+      role :role
     }
     });
     

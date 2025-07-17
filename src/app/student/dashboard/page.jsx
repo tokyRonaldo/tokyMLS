@@ -9,6 +9,7 @@ import { useUser } from "@/app/student/context/UserContext"
 
 export default function Dashboard() {
   const {userData,setUserData} = useUser()
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     console.log(userData);
   /*  setUserData({
@@ -26,24 +27,12 @@ export default function Dashboard() {
   }
   return (
  
-        <main className="flex-1 bg-slate-50">
-          <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-              <h2 className="font-medium">Dashboard</h2>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm">
-                A
+        <>
+            {loading && (
+              <div className="loading flex items-center justify-center inset-0" >
+                  <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
               </div>
-            </div>
-          </div>
-
+            )}
           <div className="p-6">
             <div className="flex flex-col gap-6 md:gap-8 max-w-6xl mx-auto">
               <div className="flex flex-col gap-2">
@@ -239,6 +228,6 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </main>
+        </>
   )
 }

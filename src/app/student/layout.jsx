@@ -4,15 +4,30 @@
 //import Sidebar from "@/components/Sidebar"
 //import Header from "@/components/Header" // si tu as un header
 import Link from "next/link"
-import { BookOpen, Clock, GraduationCap, LayoutDashboard, LineChart, Users, Menu, Bell } from "lucide-react"
+import React, { useState } from "react"
+import { BookOpen, Clock, GraduationCap, LayoutDashboard, LineChart, Users, Menu, Bell ,LogOut} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Children, cloneElement, isValidElement } from 'react'
 import { UserProvider } from "@/app/student/context/UserContext"
+import { useRouter } from "next/navigation"
 
 export default function DashboardLayout({  children } ) {
     const userData = { name: "Toky", role: "Admin" };
+    const [showDetail,setShowDetail]=useState(false)
+    const router = useRouter()
+  
+      const token= localStorage.getItem('token');
+      let user= localStorage.getItem('user');
+      const formateur= JSON.parse(user);
+  
+      async function handleLogout(){
+          localStorage.removeItem('token');
+          router.push("/student/dashboard")
+  
+      }
+  
     //const childWithProps = cloneElement(children, { user });
     /*const childrenWithProps = Children.map(children, (child) => {
         // Check if the child is a valid React element
@@ -24,6 +39,21 @@ export default function DashboardLayout({  children } ) {
       })*/
   return (
     <UserProvider>
+        <style jsx>{`
+            .detail-user {
+            position: absolute;
+            top: 30px;
+            right: 2px;
+            color: white;
+            background-color: #00bc7d;
+            z-index: 100000000;
+            width: 100px;
+            height: auto;
+            border-radius: 10%;
+            padding: 10px 10px 15px 10px;
+
+            }
+      `}</style>
 
     <div className="flex min-h-screen w-full flex-col">
       <div className="flex flex-col sm:flex-row">
@@ -85,7 +115,45 @@ export default function DashboardLayout({  children } ) {
                     </div>
                 </div>
             </div>
-        {children}
+            <main className="flex-1 bg-slate-50" style={{position : 'relative'}}>
+
+                <div className="border-b bg-white px-6 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" className="md:hidden">
+                        <Menu className="h-5 w-5" />
+                    </Button>
+                    <h2 className="font-medium">Schedule</h2>
+                    </div>
+                    <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="icon">
+                        <Bell className="h-5 w-5" />
+                    </Button>
+                    <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm cursor-pointer" style={{position: 'relative'}}
+                    onClick={()=>{
+                        setShowDetail(!showDetail)
+                    }}
+                    >
+                        JD
+                        {showDetail && 
+                            <div className="detail-user" >
+                                <div className="user-name">
+                                    
+                                    <p className="font-medium text-sm mb-2 break-words">
+                                        {formateur?.name || 'USER'}
+                                    </p>
+                                </div>
+                                <p className="user-logout flex gap-1 items-center hover:opacity-60" onClick={handleLogout}>
+                                    <LogOut size={15} />
+                                    Logout
+                                </p>
+                            </div>
+                        }
+                    </div>
+
+                    </div>
+                </div>
+                {children}
+            </main>
         </div>
     </div>
     </UserProvider>

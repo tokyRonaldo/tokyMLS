@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react"
+import React, { useState,useEffect } from "react"
 import Link from "next/link"
 import {
   BookOpen,
@@ -23,21 +23,35 @@ import { Progress } from "@/components/ui/progress"
 import { UserProvider } from "@/app/professor/context/UserContext"
 import { Children, cloneElement, isValidElement } from 'react'
 import { useRouter } from "next/navigation"
+import Loading from '../loading'
 
 
 export default function InstructorDashboardLayout({children}) {
     const [showDetail,setShowDetail]=useState(false)
-  const router = useRouter()
+    const [loading, setLoading] = useState(false);
+    const router = useRouter()
 
     const token= localStorage.getItem('token');
     let user= localStorage.getItem('user');
     const formateur= JSON.parse(user);
+    console.log('tessssssssssssssss')
+    console.log(user)
+
+ 
 
     async function handleLogout(){
+        setLoading(true)
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         router.push("/student/dashboard")
 
     }
+    useEffect(()=>{
+        if (!user && !token) {
+            router.push("/auth/login")
+        }
+    },[])
+
 
   return (
           
@@ -58,6 +72,9 @@ export default function InstructorDashboardLayout({children}) {
             }
       `}</style>
         <div className="flex min-h-screen w-full flex-col">
+        {loading && (
+          <Loading/>
+        )}
         <div className="flex flex-col sm:flex-row">
             {/* Sidebar */}
             <div className="border-r bg-slate-900 text-white p-6 pt-8 hidden md:block w-[260px] shrink-0 h-screen sticky top-0">

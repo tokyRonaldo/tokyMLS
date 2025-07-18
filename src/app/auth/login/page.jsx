@@ -2,20 +2,27 @@
 import Link from 'next/link'
 import { useState } from "react"
 import { GraduationCap, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import Loading from '../../loading'
+import toast from 'react-hot-toast';
+
 
 
 export default function Login() {
-    const [username,setUsername]=useState('')
-    const [password,setPassword]=useState('')
+    const router = useRouter()
+    const [email,setEmail]=useState(null)
+    const [password,setPassword]=useState(null)
+    const [loading, setLoading] = useState(false);
+
     const handleLogin= async(e)=>{
+        setLoading(true)
         e.preventDefault();
-        console.log(username);
         try{
             const login= await fetch('/api/auth/login',{
                 'method' : 'POST',
@@ -23,30 +30,42 @@ export default function Login() {
                     'Content-type': 'application/json'
                   },
                 body : JSON.stringify({
-                    username,password
+                    email,password
                 })
           
             })
-            if(reponse.ok){
-                const result = await reponse.json();
+            if(login.ok){
+                const result = await login.json();
                 localStorage.setItem('token',result.token);
-                console.log(result)
+                localStorage.setItem('user',JSON.stringify(result.data));
+                // Redirection en fonction du type d'utilisateur
+                if (result.data.role === "etudiant") {
+                  router.push("/student/dashboard")
+                } else {
+                  router.push("/professor/dashboard")
+                }
+                setLoading(false)
+
               }
+            else{
+                setLoading(false)
+                toast.error('Une erreur est survenue');
+
+                console.log('error')
+            }
         
         
-              // Redirection en fonction du type d'utilisateur
-              if (result.data.role === "etudiant") {
-                router.push("/")
-              } else {
-                router.push("/instructor/dashboard")
-              }
         
         }catch(error){
             console.error(error)
+            toast.error(err.message || 'Une erreur est survenue');
         }
     }
     return (
 <div className="flex flex-1 min-h-screen justify-center items-center bg-slate-50">
+    {loading && (
+          <Loading/>
+    )}
     <div className='w-full max-w-md'>
 
         <div className="mb-8 flex flex-col items-center text-center">
@@ -65,8 +84,8 @@ export default function Login() {
                 <form action="" onSubmit={handleLogin}>
                     <div className='username grid grid-cols-1 gap-2'>
                         <div className='space-y-2'>
-                            <Label htmlFor="userName">Username</Label>
-                            <Input id="userName" name="username" placeholder="username" required onChange={(e)=>{setUsername(e.target.value)}} />
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" type="email" name="email" placeholder="email" required value={email} onChange={(e)=>{setEmail(e.target.value)}} />
                         </div>
                         <div className='space-y-2'>
                             <Label htmlFor="password">Password</Label>

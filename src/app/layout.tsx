@@ -31,9 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Toaster position="top-right" />
-        <Suspense fallback={<GlobalLoader />}>
+        {/*<Suspense fallback={<GlobalLoader />}>*/}
           {children}
-        </Suspense>
+        {/*</Suspense>*/}
       </body>
     </html>
   );

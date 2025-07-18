@@ -92,7 +92,7 @@ try{
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: '7d' // expire dans 7 jours
+        expiresIn: '1d' // expire dans 7 jours
       }
     )
     return NextResponse.json({ data: user,token:token }, { status: 201 });

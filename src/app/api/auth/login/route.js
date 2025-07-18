@@ -1,6 +1,7 @@
 // src/app/api/user/route.js
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { PrismaClient } from '../../../../generated/prisma';
+const prisma = new PrismaClient();
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { requireAuth } from '@/lib/middleware/auth';
@@ -37,16 +38,24 @@ try{
 
   const body = await request.json();
   console.log(body);
-  const { username,password } = body;
+  const { email,password } = body;
   // Exemple de création d'utilisateur avec Prisma
   const user = await prisma.user.findFirst({
-    where: { username }
+    where: { email }
     });
-    
+    console.log(user);
+    console.log('uusssssssssssssssseeeeeeeeeeerrrrr');
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return new Response(JSON.stringify({ error: 'Identifiants invalides' }), { status: 401 })
     }
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+    const token = jwt.sign({
+      id:user.id,
+      email:user.email
+      },
+       process.env.JWT_SECRET, 
+       { expiresIn: '1d'
+
+      })
     return NextResponse.json({ data: user,token:token }, { status: 201 });
   }
   catch(e){

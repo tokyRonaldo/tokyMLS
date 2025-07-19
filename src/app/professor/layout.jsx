@@ -34,10 +34,6 @@ export default function InstructorDashboardLayout({children}) {
     const token= localStorage.getItem('token');
     let user= localStorage.getItem('user');
     const formateur= JSON.parse(user);
-    console.log('tessssssssssssssss')
-    console.log(user)
-
- 
 
     async function handleLogout(){
         setLoading(true)

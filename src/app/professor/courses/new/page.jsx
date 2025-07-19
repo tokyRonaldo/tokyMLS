@@ -43,7 +43,11 @@ import {
 } from "@/components/ui/dialog"
 
 import Loading from '../../../loading'
+import '../../../loading.css'
+
 import toast from 'react-hot-toast';
+import { useRouter } from "next/navigation"
+
 
 import { useEffect,useState } from "react"
 
@@ -71,6 +75,9 @@ export default function NewCourse() {
   const [coursSubtitle, setCoursSubtitle] = useState('');
   const [loading, setLoading] = useState(false);
   const token= localStorage.getItem('token');
+  const user= JSON.parse(localStorage.getItem('user'));
+  const router = useRouter()
+
 
   const lessonArray=[
     { title: "HTML Basics", type: "text", completed: true },
@@ -167,10 +174,15 @@ export default function NewCourse() {
   
 
   const handleSubmitCours = async () => {
+    if(coursTitle=="" || coursCategory=="" ||listLesson.length== 0){
+      toast.error("Veuiller remplir tout les champ obligatoire marqué par des '*' et le lesson aussi");
+      return;
+    }
     setLoading(true)
+
     try {
+     
       const formData = new FormData();
-  
       // Champs simples
       formData.append("coursTitle", coursTitle);
       formData.append("coursDescription", coursDescription);
@@ -178,6 +190,7 @@ export default function NewCourse() {
       formData.append("coursContent", coursContent);
       formData.append("coursCategory", coursCategory);
       formData.append("coursSubtitle", coursSubtitle);
+      formData.append("userId", user.id);
   
       // Fichiers (si ce sont bien des File)
       if (coursImage instanceof File) {
@@ -218,10 +231,14 @@ export default function NewCourse() {
       });
       if (!response.ok) {
         console.error('Erreur lors de la récupération du cours');
+        setLoading(false)
+        toast.error('Une erreur est survenue');
+
         return;
       }
       
       const resp = await response.json();
+      router.push("/professor/courses")
       setLoading(false)
       toast.success('Données chargées avec succès');
 
@@ -290,7 +307,7 @@ export default function NewCourse() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="title">Course Title</Label>
+                            <Label htmlFor="title">Course Title *</Label>
                             <Input
                               id="cours_title"
                               placeholder="Enter course title"
@@ -321,7 +338,7 @@ export default function NewCourse() {
                           </div>
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                              <Label htmlFor="category">Category</Label>
+                              <Label htmlFor="category">Category *</Label>
                               <Select value={coursCategory}
                               onValueChange={(value) => setCoursCategory(value)}
                               >
@@ -443,7 +460,7 @@ export default function NewCourse() {
                     <Card className="border-none shadow-sm">
                       <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                          <CardTitle>Course Lessons</CardTitle>
+                          <CardTitle>Course Lessons *</CardTitle>
                           <CardDescription>Organize your course content into modules and lessons</CardDescription>
                         </div>
                         <Dialog open={showModal} onOpenChange={setShowModal}>

@@ -32,19 +32,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { format, addDays, subDays, startOfWeek, isSameDay } from "date-fns"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useEffect, useState } from "react"
+import '../../loading.css'
 
 
 export default function CoursesPage() {
   //const token= localStorage.getItem('token');
   const [listCours,setListCours]=useState([]);
+  const [loading, setLoading] = useState(false);
+  let user= localStorage.getItem('user');
+  const formateur= JSON.parse(user);
+
 
   useEffect(() => { getListCours()},[])
 
   async function getListCours(){
+    setLoading(true)
+
     try{
-      const response= await fetch('/api/cours',{
+      const response= await fetch(`/api/cours?formateur_id=${formateur.id}`,{
         method : 'GET',
         headers :{
           "Content-Type": "application/json",
@@ -52,19 +60,25 @@ export default function CoursesPage() {
         }
       });
       if(!response.ok){
+      setLoading(false)
+
         console.log('erreur')
         return;
       }
       const result= await response.json();
+      setLoading(false)
       console.log(result);
       setListCours(result);
     }catch(e){
+      setLoading(false)
       console.error('error',e.message);
     }
   }
 
   async function handleDeleteCours(id,e){
     e.preventDefault();
+    setLoading(true)
+
     try{
       const response= await fetch('/api/cours',{
         method:'delete',
@@ -75,15 +89,16 @@ export default function CoursesPage() {
         
       })
       if(!response.ok){
+      setLoading(false)
         return;
       }
       const result= await response.json();
-      console.log('tesssssssssssssst');
-      console.log(result);
+      setLoading(false)
       setListCours(result.data)
 
     }
     catch(e){
+      setLoading(false)
       console.error('error',e.message)
     }
   }
@@ -188,13 +203,13 @@ export default function CoursesPage() {
                           </div>
                         </CardContent>
                         <CardFooter className="flex gap-2">
-                          <Link href={`/instructor/course/${i + 1}/edit`} className="flex-1">
+                          <Link href={`/professor/courses/${cours.id}`} className="flex-1">
                             <Button variant="outline" className="w-full border-slate-200">
                               <Edit className="h-4 w-4" />
                               Edit
                             </Button>
                           </Link>
-                          <Link href={`/course/${i + 1}`} className="flex-1">
+                          <Link href="#" className="flex-1">
                             <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
                               <Eye className="h-4 w-4" />
                               View
@@ -220,66 +235,28 @@ export default function CoursesPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Course Name</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead>Categorie</TableHead>
                             <TableHead>Students</TableHead>
-                            <TableHead>Completion</TableHead>
+                            <TableHead>Description</TableHead>
                             <TableHead>Last Updated</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {Array.from({ length: 6 }).map((_, i) => (
+                          {listCours?.map((cours, i) => (
                             <TableRow key={i}>
                               <TableCell className="font-medium">
-                                {
-                                  [
-                                    "Web Development Fundamentals",
-                                    "Data Science Essentials",
-                                    "UX Design Principles",
-                                    "Mobile App Development",
-                                    "Digital Marketing Basics",
-                                    "Graphic Design Masterclass",
-                                  ]}
+                                {cours.nom}
                               </TableCell>
                               <TableCell>
-                                <span
-                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                                    ["Active", "Draft", "Popular", "New", "Archived", "Upcoming"][i] === "Active"
-                                      ? "bg-emerald-100 text-emerald-700"
-                                      : ["Active", "Draft", "Popular", "New", "Archived", "Upcoming"][i] === "Popular"
-                                        ? "bg-blue-100 text-blue-700"
-                                        : ["Active", "Draft", "Popular", "New", "Archived", "Upcoming"][i] === "Draft"
-                                          ? "bg-amber-100 text-amber-700"
-                                          : ["Active", "Draft", "Popular", "New", "Archived", "Upcoming"][i] ===
-                                              "Archived"
-                                            ? "bg-slate-100 text-slate-700"
-                                            : ["Active", "Draft", "Popular", "New", "Archived", "Upcoming"][i] === "New"
-                                              ? "bg-purple-100 text-purple-700"
-                                              : "bg-orange-100 text-orange-700"
-                                  }`}
-                                >
-                                  {["Active", "Draft", "Popular", "New", "Archived", "Upcoming"][i]}
-                                </span>
+                                {cours.theCategories}
                               </TableCell>
-                              <TableCell>{[156, 98, 42, 75, 120, 65][i]}</TableCell>
+                              <TableCell></TableCell>
                               <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <Progress
-                                    value={[78, 65, 32, 45, 82, 58][i]}
-                                    className="h-2 w-[80px] bg-slate-100"
-                                    indicatorClassName={`bg-${
-                                      [78, 65, 32, 45, 82, 58][i] > 70
-                                        ? "emerald"
-                                        : [78, 65, 32, 45, 82, 58][i] > 50
-                                          ? "blue"
-                                          : "amber"
-                                    }-500`}
-                                  />
-                                  <span className="text-sm">{[78, 65, 32, 45, 82, 58][i]}%</span>
-                                </div>
+                                {cours.description}
                               </TableCell>
                               <TableCell className="text-slate-500">
-                                {["2 days ago", "1 week ago", "3 days ago", "Yesterday", "5 days ago", "Today"][i]}
+                                {format(cours.updatedAt,'Y-MM-dd')}
                               </TableCell>
                               <TableCell className="text-right">
                                 <DropdownMenu>
@@ -290,25 +267,18 @@ export default function CoursesPage() {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuItem>
-                                      <Link href={`/course/${i + 1}`} className="flex w-full">
+                                      <Link href="#" className="flex w-full">
                                         <Eye className="h-4 w-4 mr-2" />
                                         View
                                       </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                      <Link href={`/instructor/course/${i + 1}/edit`} className="flex w-full">
+                                      <Link href={`/professor/courses/${cours.id}`} className="flex w-full">
                                         <Edit className="h-4 w-4 mr-2" />
                                         Edit
                                       </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                      <Link href={`/instructor/course/${i + 1}/students`} className="flex w-full">
-                                        <Users className="h-4 w-4 mr-2" />
-                                        Students
-                                      </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-red-600">
+                                    <DropdownMenuItem className="text-red-600" onClick={(e)=>handleDeleteCours(cours.id,e)}>
                                       <Trash2 className="h-4 w-4 mr-2" />
                                       Delete
                                     </DropdownMenuItem>
@@ -321,7 +291,7 @@ export default function CoursesPage() {
                       </Table>
                     </CardContent>
                     <CardFooter className="flex items-center justify-between border-t p-4">
-                      <div className="text-sm text-slate-500">
+                      {/*<div className="text-sm text-slate-500">
                         Showing <span className="font-medium">1</span> to <span className="font-medium">6</span> of{" "}
                         <span className="font-medium">6</span> courses
                       </div>
@@ -339,7 +309,7 @@ export default function CoursesPage() {
                         <Button variant="outline" size="sm" className="h-8 w-8 p-0 border-slate-200">
                           &gt;
                         </Button>
-                      </div>
+                      </div>*/}
                     </CardFooter>
                   </Card>
                 </TabsContent>

@@ -53,6 +53,7 @@ apiRoute.use(upload.any());
 
 // Gestion de la requête POST
 apiRoute.post(async (req, res) => {
+  const coursId=req.query.coursId
   try {
     const {
       coursTitle,
@@ -61,6 +62,7 @@ apiRoute.post(async (req, res) => {
       coursContent,
       coursCategory,
       coursSubtitle,
+      userId,
     } = req.body;
   // Récupération sécurisée des fichiers
   const coursImageFile = req.files.find(f => f.fieldname === "coursImage");
@@ -70,31 +72,69 @@ apiRoute.post(async (req, res) => {
   const coursVideo = coursVideoFile ? coursVideoFile.filename : "";
     //console.log(Object.keys(prisma));
 
-  // Création du cours avec l'ID de l'utilisateur
-  const cours = await prisma.cours.create({
-    data: {
-      nom: coursTitle || "Sans titre",
-      description: coursDescription || "",
-      level: coursLevel || "",
-      content: coursContent || "",
-      //categoryId: 1,
-      category: {
-        connect: {
-          id: 1
-        }
+  //editer un cours
+  if(coursId){
+    var cours = await prisma.cours.update({
+      where: {
+        id: Number(coursId),
       },
-      theCategories : coursCategory,
-      sousTitre: coursSubtitle || "",
-      image: coursImage,
-      video: coursVideo,
-      user : {
-        connect: {
-          id: 1
-        }
-      }
+      data: {
+        nom: coursTitle || "Sans titre",
+        description: coursDescription || "",
+        level: coursLevel || "",
+        content: coursContent || "",
+        sousTitre: coursSubtitle || "",
+        image: coursImage,
+        video: coursVideo,
+        category: {
+          connect: {
+            id: 1,
+          },
+        },
+        theCategories: coursCategory,
+        user: {
+          connect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
+    //supprimer tout les lessons pour inserer des nouveaux si c'est un update
+    await prisma.lesson.deleteMany({
+      where: {
+        coursId: Number(cours.id),
+      },
+    });
 
-    },
-  });
+
+  }else
+  {
+      // Création du cours avec l'ID de l'utilisateur
+      var cours = await prisma.cours.create({
+        data: {
+          nom: coursTitle || "Sans titre",
+          description: coursDescription || "",
+          level: coursLevel || "",
+          content: coursContent || "",
+          //categoryId: 1,
+          category: {
+            connect: {
+              id: 1
+            }
+          },
+          theCategories : coursCategory,
+          sousTitre: coursSubtitle || "",
+          image: coursImage,
+          video: coursVideo,
+          user : {
+            connect: {
+              id: Number(userId)
+            }
+          }
+    
+        },
+      });
+  }
 
 
   const lessons = [];

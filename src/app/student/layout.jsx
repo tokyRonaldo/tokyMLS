@@ -4,7 +4,7 @@
 //import Sidebar from "@/components/Sidebar"
 //import Header from "@/components/Header" // si tu as un header
 import Link from "next/link"
-import React, { useState } from "react"
+import React, { useState,useEffect } from "react"
 import { BookOpen, Clock, GraduationCap, LayoutDashboard, LineChart, Users, Menu, Bell ,LogOut} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,10 +12,13 @@ import { Progress } from "@/components/ui/progress"
 import { Children, cloneElement, isValidElement } from 'react'
 import { UserProvider } from "@/app/student/context/UserContext"
 import { useRouter } from "next/navigation"
+import Loading from '../loading'
+
 
 export default function DashboardLayout({  children } ) {
-    const userData = { name: "Toky", role: "Admin" };
     const [showDetail,setShowDetail]=useState(false)
+    const [loading, setLoading] = useState(false);
+
     const router = useRouter()
   
       const token= localStorage.getItem('token');
@@ -23,8 +26,10 @@ export default function DashboardLayout({  children } ) {
       const formateur= JSON.parse(user);
   
       async function handleLogout(){
-          localStorage.removeItem('token');
-          router.push("/student/dashboard")
+        setLoading(true)
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push("/student/dashboard")
   
       }
   
@@ -37,6 +42,11 @@ export default function DashboardLayout({  children } ) {
         }
         return child
       })*/
+        useEffect(()=>{
+            if (!user && !token) {
+                router.push("/auth/login")
+            }
+        },[])
   return (
     <UserProvider>
         <style jsx>{`
@@ -56,6 +66,10 @@ export default function DashboardLayout({  children } ) {
       `}</style>
 
     <div className="flex min-h-screen w-full flex-col">
+        {loading && (
+          <Loading/>
+        )}
+
       <div className="flex flex-col sm:flex-row">
         {/* Sidebar */}
             <div className="border-r bg-slate-900 text-white p-6 pt-8 hidden md:block w-[260px] shrink-0 h-screen sticky top-0">

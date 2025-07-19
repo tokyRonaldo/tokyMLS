@@ -45,6 +45,7 @@ import {
 import { use } from 'react';
 import { useParams } from 'next/navigation';
 import '../../../loading.css'
+import { useRouter } from "next/navigation"
 
 import { useEffect,useState } from "react"
 
@@ -71,7 +72,9 @@ export default function NewCourse() {
   const [coursVideoPreview, setCoursVideoPreview] = useState(null);
   const [coursSubtitle, setCoursSubtitle] = useState('');
   const [loading, setLoading] = useState(false);
+  const user= JSON.parse(localStorage.getItem('user'));
   const token= localStorage.getItem('token');
+  const router = useRouter()
 
   const params = useParams();
   const id = params.id;
@@ -120,6 +123,7 @@ export default function NewCourse() {
         setCoursDescription(resp.description);
         setCoursLevel(resp.level);
         setCoursSubtitle(resp.sousTitre);
+        setCoursCategory(resp.theCategories)
         if(resp.image && resp.image!= ''){
           setCoursImagePreview(`/uploads/${resp.image}`);
           setCoursImage(resp.image);
@@ -198,9 +202,6 @@ export default function NewCourse() {
       ]);
     }
     initializeVariable();
-    console.log('test beu');
-    console.log(listLesson);
-    console.log(identifiantLesson)
   }
 
   const handleDeleteLesson=async (i) =>{
@@ -220,6 +221,7 @@ export default function NewCourse() {
   
 
   const handleSubmitCours = async () => {
+    setLoading(true);
     console.log('subbbbmiiiiiiiiiiit')
     try {
       const formData = new FormData();
@@ -231,6 +233,7 @@ export default function NewCourse() {
       formData.append("coursContent", coursContent);
       formData.append("coursCategory", coursCategory);
       formData.append("coursSubtitle", coursSubtitle);
+      formData.append("userId", user.id);
   
       // Fichiers (si ce sont bien des File)
       if (coursImage instanceof File) {
@@ -261,7 +264,7 @@ export default function NewCourse() {
         formData.append("lesson", JSON.stringify(listLesson));
       }*/
   
-      const response = await fetch("/api/cours", {
+      const response = await fetch(`/api/cours?coursId=${id}`, {
         method: "POST",
         body: formData, // pas de JSON ici
          headers: {
@@ -269,11 +272,24 @@ export default function NewCourse() {
           'Authorization' : 'Bearer ' + token
          }
       });
-  
+      if (!response.ok) {
+        console.error('Erreur lors de la récupération du cours');
+        setLoading(false)
+        toast.error('Une erreur est survenue');
+
+        return;
+      }
+
       const resp = await response.json();
-      console.log(resp);
+      router.push("/professor/courses")
+      setLoading(false)
+      toast.success('Données chargées avec succès');
+
     } catch (error) {
       console.error("Erreur lors de l'envoi du cours :", error);
+      setLoading(false)
+      toast.error(err.message || 'Une erreur est survenue');
+
     }
   };
 
@@ -315,10 +331,10 @@ export default function NewCourse() {
                     Course Details
                   </TabsTrigger>
                   <TabsTrigger
-                    value="curriculum"
+                    value="lesson"
                     className="rounded-md flex-initial data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600"
                   >
-                    Curriculum
+                    Lessons
                   </TabsTrigger>
                 </TabsList>
 
@@ -480,12 +496,12 @@ export default function NewCourse() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="curriculum">
+                <TabsContent value="lesson">
                   <div className="space-y-6">
                     <Card className="border-none shadow-sm">
                       <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                          <CardTitle>Course Curriculum</CardTitle>
+                          <CardTitle>Course lesson</CardTitle>
                           <CardDescription>Organize your course content into modules and lessons</CardDescription>
                         </div>
                         <Dialog open={showModal} onOpenChange={setShowModal}>

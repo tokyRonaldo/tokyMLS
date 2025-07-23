@@ -29,7 +29,7 @@ export default function DashboardLayout({  children } ) {
         setLoading(true)
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        router.push("/student/dashboard")
+        router.push("/auth/login")
   
       }
   
@@ -136,7 +136,7 @@ export default function DashboardLayout({  children } ) {
                     <Button variant="ghost" size="icon" className="md:hidden">
                         <Menu className="h-5 w-5" />
                     </Button>
-                    <h2 className="font-medium">Schedule</h2>
+                    <h2 className="font-medium"><GraduationCap className="h-6 w-6 text-emerald-400" /></h2>
                     </div>
                     <div className="flex items-center gap-3">
                     <Button variant="ghost" size="icon">

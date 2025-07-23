@@ -17,10 +17,14 @@ const apiRoute = createRouter({
   });
 
   apiRoute.get(async (req, res) => {
-    const { type, id } = req.query;
+    const { type, id,userId } = req.query;
     try{
+      console.log('testttttt');
       console.log(id);
-      if(id != undefined){
+
+      console.log('etttttttttttttt')
+      if(id != undefined && userId !== undefined){
+        console.log('icccccccccccccc')
         const response= await prisma.suivreCours.create({
           data: {
             cours: {
@@ -30,18 +34,19 @@ const apiRoute = createRouter({
             },
             user : {
               connect :{
-                id:1
+                id:Number(userId)
               }
             }
           }
         })
+        console.log(response)
         
         return res.status(200).json(response);
       }
       else{
         const allCours = await prisma.cours.findMany();
         const coursInscrits = await prisma.suivreCours.findMany({
-          //where: { userId },
+          where: { userId :Number(userId)},
           select: { coursId: true }
         });
         const coursIdInscrits = new Set(coursInscrits.map(c => c.coursId));

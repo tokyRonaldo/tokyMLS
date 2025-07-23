@@ -13,11 +13,14 @@ import { useEffect, useState } from "react"
 export default function CoursesPage() {
   const [allListCours,setAllListCours]=useState([]);
   const [loading, setLoading] = useState(false)
+  const token= localStorage.getItem('token');
+  let userStorage= localStorage.getItem('user');
+  const user= JSON.parse(userStorage);
 
 
   async function getAllListCours(type){
     try{
-      const response= await fetch(`/api/student/cours/?type=${encodeURIComponent(type)}`,{
+      const response= await fetch(`/api/student/cours/?type=${encodeURIComponent(type)}&userId=${user.id}`,{
         method : 'GET',
         headers :{
           "Content-Type": "application/json",
@@ -39,7 +42,7 @@ export default function CoursesPage() {
 
   async function handleEnrollNow(id){
     try{
-      const response= await fetch(`/api/student/cours/?id=${encodeURIComponent(id)}`,{
+      const response= await fetch(`/api/student/cours/?id=${encodeURIComponent(id)}&userId=${user.id}`,{
         method : 'GET',
         headers :{
           "Content-Type": "application/json",

@@ -39,7 +39,7 @@ export default function InstructorDashboardLayout({children}) {
         setLoading(true)
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        router.push("/student/dashboard")
+        router.push("/auth/login")
 
     }
     useEffect(()=>{
@@ -121,14 +121,14 @@ export default function InstructorDashboardLayout({children}) {
                 Students
                 </Link>
                 <Link
-                href="/instructor/content"
+                href="#"
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
                 <FileText className="h-5 w-5" />
                 Content
                 </Link>
                 <Link
-                href="/instructor/settings"
+                href="#"
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
                 <Settings className="h-5 w-5" />
@@ -145,7 +145,7 @@ export default function InstructorDashboardLayout({children}) {
                     <Button variant="ghost" size="icon" className="md:hidden">
                         <Menu className="h-5 w-5" />
                     </Button>
-                    <h2 className="font-medium">Schedule</h2>
+                    <GraduationCap className="h-6 w-6 text-emerald-400" />
                     </div>
                     <div className="flex items-center gap-3">
                     <Button variant="ghost" size="icon">

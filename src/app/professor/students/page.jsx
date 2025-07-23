@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link"
 import {
   BookOpen,
@@ -30,8 +31,40 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react"
+import '../../loading.css'
+
 
 export default function students(){
+  const [loading, setLoading] = useState(false);
+  const [listStudents, setListStudents] = useState([]);
+
+  let user= localStorage.getItem('user');
+  const formateur= JSON.parse(user);
+
+  const handleListeStudents= async()=>{
+    setLoading(true);
+    const response= await fetch(`/api/professor/students?formateur_id=${formateur.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      setLoading(false)
+      if(!response.ok){
+        console.error('error')
+        return;
+      }
+      let result = await response.json();
+      console.log(result);
+      console.log('testtttt');
+      setListStudents(result);
+  }
+
+useEffect(()=>{
+  handleListeStudents()
+},[])
+
     return(
         <>
             {loading && (

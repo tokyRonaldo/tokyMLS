@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Loading from '../../loading'
+import '../../loading.css'
 import toast from 'react-hot-toast';
 
 
@@ -64,7 +65,9 @@ export default function Login() {
     return (
 <div className="flex flex-1 min-h-screen justify-center items-center bg-slate-50">
     {loading && (
-          <Loading/>
+          <div className="loading flex items-center justify-center inset-0" >
+            <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+        </div>
     )}
     <div className='w-full max-w-md'>
 
@@ -138,7 +141,7 @@ export default function Login() {
             <CardFooter className="flex justify-center">
             <p className="text-sm text-slate-500">
               Vous avez déjà un compte?{" "}
-              <Link href="/auth/login" className="text-emerald-600 hover:underline">
+              <Link href="/auth/register" className="text-emerald-600 hover:underline">
                 Se connecter
               </Link>
             </p>

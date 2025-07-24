@@ -19,6 +19,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import Loading from '../../loading'
+import '../../loading.css'
+
 import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
@@ -125,7 +127,9 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-slate-50 p-4">
       {loading && (
-          <Loading/>
+          <div className="loading flex items-center justify-center inset-0" >
+              <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+          </div>
       )}
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">

@@ -24,6 +24,7 @@ import { UserProvider } from "@/app/professor/context/UserContext"
 import { Children, cloneElement, isValidElement } from 'react'
 import { useRouter } from "next/navigation"
 import Loading from '../loading'
+import '../loading.css'
 
 
 export default function InstructorDashboardLayout({children}) {
@@ -58,18 +59,37 @@ export default function InstructorDashboardLayout({children}) {
             top: 30px;
             right: 2px;
             color: white;
-            background-color: #00bc7d;
+            background-color: #1d293d;
             z-index: 100000000;
-            width: 100px;
+            width: auto;
             height: auto;
             border-radius: 10%;
-            padding: 10px 10px 15px 10px;
+            padding: 20px 20px 20px 20px;
+            text-align:center;
 
+            };
+
+            .user-name{
+                margin-bottom: 10px;
+            }
+            
+            .user-logout{
+                border: 2px solid #848993;
+                padding: 4px 10px 4px 10px;
+                border-radius: 8%;
+                font-size:15px;
+            }
+
+            .user-name-p{
+                font-size:13.5px;
+                color: #8596ae;
             }
       `}</style>
         <div className="flex min-h-screen w-full flex-col">
         {loading && (
-          <Loading/>
+            <div className="loading flex items-center justify-center inset-0" >
+                <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+            </div>
         )}
         <div className="flex flex-col sm:flex-row">
             {/* Sidebar */}
@@ -159,13 +179,13 @@ export default function InstructorDashboardLayout({children}) {
                         JD
                         {showDetail && 
                             <div className="detail-user" >
-                                <div className="user-name">
+                                <div className="user-name items-center border-slate-600 ">
                                     
-                                    <p className="font-medium text-sm mb-2 break-words">
-                                        {formateur?.name || 'USER'}
+                                    <p className="font-medium user-name-p mb-2 break-words border-slate-600">
+                                        {formateur?.username || 'USER'}
                                     </p>
                                 </div>
-                                <p className="user-logout flex gap-1 items-center hover:opacity-60" onClick={handleLogout}>
+                                <p className="user-logout flex gap-1 items-center hover:bg-slate-700" onClick={handleLogout}>
                                     <LogOut size={15} />
                                     Logout
                                 </p>

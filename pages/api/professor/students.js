@@ -21,13 +21,14 @@ const apiRoute = createRouter({
 
     try {
       // Récupère tous les utilisateurs avec le rôle "etudiant"
+
       const etudiants = await prisma.user.findMany({
         where: {
           role: "etudiant",
         },
         select: {
           id: true,
-          name: true,
+          username: true,
           email: true,
         },
       });
@@ -46,7 +47,7 @@ const apiRoute = createRouter({
       });
 
       // Crée une map rapide userId => nombre de cours
-      const countMap = new Map<number, number>();
+      const countMap = new Map();
       coursCounts.forEach(item => {
         countMap.set(item.userId, item._count.coursId);
       });
@@ -55,16 +56,69 @@ const apiRoute = createRouter({
       const result = etudiants.map(etudiant => ({
         ...etudiant,
         coursSuivis: countMap.get(etudiant.id) || 0, // 0 si non trouvé
-      }));
+      }))
+      .filter(etudiant => etudiant.coursSuivis > 0);
 
-// Résultat final
+    // Résultat final
     return res.status(200).json(result);
+
+    /*
+        const cours = await prisma.cours.findMany({
+        where: {
+          userId: 2,
+        },
+        include: {
+          suivis: {
+            where: {
+              user: {
+                role: 'etudiant',
+              }
+            },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  email: true
+                }
+              }
+            }
+          }
+        }
+      });
+    return res.status(200).json(cours);
+  */
 
     } catch (e) {
     return res.status(500).json({ message: 'Erreur serveur', error: e.message });
     }
 
 })
+
+apiRoute.delete(async (req, res) => {
+  const { formateur_id,student_id } = req.query;
+
+  try {
+
+        // Supprime les relations "suivreCours" entre l'étudiant et les cours du formateur
+        const deletedRelations = await prisma.suivreCours.deleteMany({
+          where: {
+            userId: Number(student_id),
+            cours: {
+              userId: Number(formateur_id),
+            },
+          },
+        });
+
+        return res.status(200).json(deletedRelations);
+
+
+  } catch (e) {
+  return res.status(500).json({ message: 'Erreur serveur', error: e.message });
+  }
+
+})
+
   
 
 

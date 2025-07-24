@@ -60,6 +60,29 @@ export default function students(){
       console.log('testtttt');
       setListStudents(result);
   }
+  const handleDeleteStudent= async (studentId) => {
+    console.log(studentId);
+    console.log('studentntnnnnn');
+    setLoading(true);
+    const response= await fetch(`/api/professor/students?formateur_id=${formateur.id}&student_id=${studentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      setLoading(false)
+      if(!response.ok){
+        console.error('error')
+        return;
+      }
+      let result = await response.json();
+      console.log(result);
+      console.log('testtttt222');
+      //setListStudents(result);
+      setListStudents(prev =>
+        prev.filter(student => student.id !== studentId)
+      );
+  }
 
 useEffect(()=>{
   handleListeStudents()
@@ -135,30 +158,18 @@ useEffect(()=>{
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {Array.from({ length: 10 }).map((_, i) => (
+                      {listStudents.map((student, i) => (
                         <TableRow key={i}>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center">
                                 <span className="text-xs font-medium">
-                                  {["AJ", "SM", "RB", "JD", "KL", "MP", "TW", "EH", "CG", "VN"][i]}
+                                  ST
                                 </span>
                               </div>
                               <div>
                                 <p className="font-medium">
-                                  {
-                                    [
-                                      "Alex Johnson",
-                                      "Sarah Miller",
-                                      "Robert Brown",
-                                      "Jennifer Davis",
-                                      "Kevin Lee",
-                                      "Maria Perez",
-                                      "Thomas Wilson",
-                                      "Emma Harris",
-                                      "Christopher Garcia",
-                                      "Victoria Nguyen",
-                                    ][i]
+                                  {student.username
                                   }
                                 </p>
                               </div>
@@ -166,24 +177,13 @@ useEffect(()=>{
                           </TableCell>
                           <TableCell>
                             {
-                              [
-                                "alex.johnson@example.com",
-                                "sarah.miller@example.com",
-                                "robert.brown@example.com",
-                                "jennifer.davis@example.com",
-                                "kevin.lee@example.com",
-                                "maria.perez@example.com",
-                                "thomas.wilson@example.com",
-                                "emma.harris@example.com",
-                                "christopher.garcia@example.com",
-                                "victoria.nguyen@example.com",
-                              ][i]
+                              student.email
                             }
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-1">
                               <Badge variant="outline" className="bg-slate-100 text-slate-700 hover:bg-slate-200">
-                                {[3, 2, 1, 4, 2, 1, 3, 2, 1, 2][i]}
+                                {student.coursSuivis}
                               </Badge>
                             </div>
                           </TableCell>
@@ -242,7 +242,7 @@ useEffect(()=>{
                                   Send Message
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">Remove Student</DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-600" onClick={()=>handleDeleteStudent(student.id)}>Remove Student</DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>

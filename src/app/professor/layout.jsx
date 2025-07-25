@@ -23,6 +23,7 @@ import { Progress } from "@/components/ui/progress"
 import { UserProvider } from "@/app/professor/context/UserContext"
 import { Children, cloneElement, isValidElement } from 'react'
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Loading from '../loading'
 import '../loading.css'
 
@@ -35,6 +36,9 @@ export default function InstructorDashboardLayout({children}) {
     const token= localStorage.getItem('token');
     let user= localStorage.getItem('user');
     const formateur= JSON.parse(user);
+
+    const pathname = usePathname();
+    const isActive = (path) => pathname === path;
 
     async function handleLogout(){
         setLoading(true)
@@ -120,41 +124,57 @@ export default function InstructorDashboardLayout({children}) {
             </div>
             <nav className="grid gap-3">
                 <Link
-                href="/professor/dashboard"
-                className="flex items-center gap-3 rounded-lg bg-slate-800 px-3 py-2.5 text-white font-medium"
+                    href="/professor/dashboard"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
+                    isActive('/professor/dashboard')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                    }`}
                 >
-                <LayoutDashboard className="h-5 w-5 text-emerald-400" />
-                Dashboard
+                    <LayoutDashboard className="h-5 w-5 text-emerald-400" />
+                    Dashboard
                 </Link>
+
                 <Link
-                href="/professor/courses"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    href="/professor/courses"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
+                    isActive('/professor/courses')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                    }`}
                 >
-                <BookOpen className="h-5 w-5" />
-                My Courses
+                    <BookOpen className="h-5 w-5" />
+                    My Courses
                 </Link>
+
                 <Link
-                href="/instructor/students"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    href="/instructor/students"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
+                    isActive('/instructor/students')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                    }`}
                 >
-                <Users className="h-5 w-5" />
-                Students
+                    <Users className="h-5 w-5" />
+                    Students
                 </Link>
+
                 <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    href="#"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
-                <FileText className="h-5 w-5" />
-                Content
+                    <FileText className="h-5 w-5" />
+                    Content
                 </Link>
+
                 <Link
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    href="#"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
-                <Settings className="h-5 w-5" />
-                Settings
+                    <Settings className="h-5 w-5" />
+                    Settings
                 </Link>
-            </nav>
+                </nav>
             </div>
 
             {/* Main content */}

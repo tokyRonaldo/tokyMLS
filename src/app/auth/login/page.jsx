@@ -45,6 +45,7 @@ export default function Login() {
                 } else {
                   router.push("/professor/dashboard")
                 }
+                console.log('loading');
                 setLoading(false)
 
               }

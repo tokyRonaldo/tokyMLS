@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress"
 import { Children, cloneElement, isValidElement } from 'react'
 import { UserProvider } from "@/app/student/context/UserContext"
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Loading from '../loading'
 import '../loading.css'
 
@@ -26,6 +27,10 @@ export default function DashboardLayout({  children } ) {
       const token= localStorage.getItem('token');
       let user= localStorage.getItem('user');
       const student= JSON.parse(user);
+
+      const pathname = usePathname();
+      const isActive = (path) => pathname === path;
+  
   
       async function handleLogout(){
         setLoading(true)
@@ -100,22 +105,34 @@ export default function DashboardLayout({  children } ) {
                 </div>
                 <nav className="grid gap-3">
                     <Link
-                    href="/"
-                    className="flex items-center gap-3 rounded-lg bg-slate-800 px-3 py-2.5 text-white font-medium"
+                    href="/student/dashboard"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
+                        isActive('/student/dashboard')
+                            ? 'bg-slate-800 text-white'
+                            : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                        }`}
                     >
                     <LayoutDashboard className="h-5 w-5 text-emerald-400" />
                     Dashboard
                     </Link>
                     <Link
                     href="/student/courses"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
+                        isActive('/student/courses')
+                            ? 'bg-slate-800 text-white'
+                            : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                        }`}
                     >
                     <BookOpen className="h-5 w-5" />
                     My Courses
                     </Link>
                     <Link
                     href="/schedule"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
+                        isActive('/schedule')
+                            ? 'bg-slate-800 text-white'
+                            : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                        }`}
                     >
                     <Clock className="h-5 w-5" />
                     Schedule

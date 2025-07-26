@@ -14,7 +14,8 @@ import {
   TrendingUp,
   MessageSquare,
   BarChart3,
-  LogOut
+  LogOut,
+  Clock
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -157,6 +158,18 @@ export default function InstructorDashboardLayout({children}) {
                 >
                     <Users className="h-5 w-5" />
                     Students
+                </Link>
+
+                <Link
+                    href="/professor/schedule"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
+                    isActive('/professor/schedule')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                    }`}
+                >
+                    <Clock className="h-5 w-5" />
+                    Schedules
                 </Link>
 
                 <Link

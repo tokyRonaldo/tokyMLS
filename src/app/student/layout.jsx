@@ -127,9 +127,9 @@ export default function DashboardLayout({  children } ) {
                     My Courses
                     </Link>
                     <Link
-                    href="/schedule"
+                    href="/student/schedule"
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
-                        isActive('/schedule')
+                        isActive('student/schedule')
                             ? 'bg-slate-800 text-white'
                             : 'text-slate-300 hover:text-white hover:bg-slate-800'
                         }`}

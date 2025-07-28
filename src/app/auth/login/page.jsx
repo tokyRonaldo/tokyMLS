@@ -20,6 +20,8 @@ export default function Login() {
     const [email,setEmail]=useState(null)
     const [password,setPassword]=useState(null)
     const [loading, setLoading] = useState(false);
+    const [errorLogin, setErrorLogin] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     const handleLogin= async(e)=>{
         setLoading(true)
@@ -40,6 +42,8 @@ export default function Login() {
                 localStorage.setItem('token',result.token);
                 localStorage.setItem('user',JSON.stringify(result.data));
                 // Redirection en fonction du type d'utilisateur
+                setLoading(false)
+
                 if (result.data.role === "etudiant") {
                   router.push("/student/dashboard")
                 } else {
@@ -50,8 +54,11 @@ export default function Login() {
 
               }
             else{
-                setLoading(false)
+                setErrorLogin(true)
+                setErrorMsg('Une erreur est survenue')
                 toast.error('Une erreur est survenue');
+                setLoading(false)
+
 
                 console.log('error')
             }
@@ -60,6 +67,8 @@ export default function Login() {
         
         }catch(error){
             console.error(error)
+            setErrorLogin(true)
+            setErrorMsg(error.message || 'Une erreur est survenue')
             toast.error(err.message || 'Une erreur est survenue');
         }
     }
@@ -79,6 +88,17 @@ export default function Login() {
           </div>
           <p className="mt-2 text-slate-500">Créez votre compte pour commencer à apprendre</p>
         </div>
+
+        {errorLogin && (
+        <div className='div-error bg-red-300 rounded p-2 pt-7 px-3 text-black relative' >
+            <span className='absolute top-0.5 right-2 cursor-pointer px-2 rounded-full hover:opacity-60 hover:bg-slate-100 hover:bg-emerald-700' 
+            onClick={setErrorLogin(false)}
+            >x</span>
+            <p className='break-words  p-2' style={{color:'#0c0c0dc4'}}>
+                {errorMsg}
+            </p>
+        </div>)
+        }
         <Card className='border-none shadow-md'>
             <CardHeader>
                 <CardTitle>Login</CardTitle>

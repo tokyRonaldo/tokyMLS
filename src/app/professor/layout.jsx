@@ -72,10 +72,12 @@ export default function InstructorDashboardLayout({children}) {
             padding: 20px 20px 20px 20px;
             text-align:center;
 
-            };
+            }
 
             .user-name{
                 margin-bottom: 10px;
+                background-color: #f8fafc !important;
+                border-radius: 5px !important;
             }
             
             .user-logout{
@@ -87,7 +89,6 @@ export default function InstructorDashboardLayout({children}) {
 
             .user-name-p{
                 font-size:13.5px;
-                color: #8596ae;
             }
       `}</style>
         <div className="flex min-h-screen w-full flex-col">
@@ -149,7 +150,7 @@ export default function InstructorDashboardLayout({children}) {
                 </Link>
 
                 <Link
-                    href="/instructor/students"
+                    href="/professor/students"
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                     isActive('/instructor/students')
                         ? 'bg-slate-800 text-white'
@@ -214,7 +215,7 @@ export default function InstructorDashboardLayout({children}) {
                             <div className="detail-user" >
                                 <div className="user-name items-center border-slate-600 ">
                                     
-                                    <p className="font-medium user-name-p mb-2 break-words border-slate-600">
+                                    <p className="font-medium user-name-p mb-2 break-words border-slate-600 text-black">
                                         {formateur?.username || 'USER'}
                                     </p>
                                 </div>

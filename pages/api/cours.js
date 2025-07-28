@@ -196,7 +196,13 @@ apiRoute.get(async (req, res) => {
         where: {
           userId: Number(formateur_id), // ou une variable comme id: myId
         },
-      })
+        include: {
+          _count: {
+            select: {
+              suivis: true, // nombre d'étudiants qui suivent ce cours
+            },
+          },
+        },      })
       return res.status(200).json(response);
     }else{
 

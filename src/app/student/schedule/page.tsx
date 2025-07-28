@@ -245,7 +245,7 @@ export default function InstructorSchedule() {
                                   >
                                     <div className="flex items-center gap-1 mb-1">
                                       <Video className="h-3 w-3 text-emerald-600" />
-                                      <span className="font-medium text-emerald-800 truncate">{conference.title}</span>
+                                      <span className="font-medium text-emerald-800 truncate">{conference.titre}</span>
                                     </div>
                                     <div className="text-emerald-600 flex items-center gap-1">
                                       <Clock className="h-3 w-3" />
@@ -258,50 +258,10 @@ export default function InstructorSchedule() {
                                 ))}
                               </div>
 
-                              {/* Bouton d'ajout rapide */}
-                              {isCurrentMonthDay && (
-                                
-                                <Dialog open={openVisioRapide} onOpenChange={setOpenVisioRapide}>
-                                <DialogTrigger asChild>
-                                  <Button variant="outline" size="sm"  className="w-full mt-2 h-8 text-xs border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700">
-                                    <Plus className="mr-1 h-3 w-3" />
-                                    Ajouter session
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px]">
-                                  <DialogHeader>
-                                    <DialogTitle>
-                                      Visioconférence - {format(date, "d MMMM yyyy", { locale: fr })}
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                      Remplissez les détails pour créer une nouvelle session de visioconférence pour vos étudiants.
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  <div className="grid gap-4 py-4">
-                                    <div className="grid gap-2">
-                                      <Label htmlFor="day-title">Titre</Label>
-                                      
-                                    </div>
-                                    <div className="grid gap-2">
-                                      <Label htmlFor="course">Cours associé</Label>
-                                      
-                                    </div>
-
-                                    <div className="grid gap-2">
-                                      <Label htmlFor="day-time">Heure</Label>
-                                  
-                                    </div>
-
-                                  </div>
-                                  <DialogFooter>
-                                    <Button variant="outline">Annuler</Button>
-                                    <Button className="bg-emerald-600 hover:bg-emerald-700">
-                                      Ajouter
-                                    </Button>
-                                  </DialogFooter>
-                                </DialogContent>
-                              </Dialog>
-                              )}
+                              {isCurrentMonthDay && <div className=" border-emerald-300 rounded-md p-2 " style={{border:'1px solid #5ee9b5'}}>
+                                  <span className="w-full mt-2 h-8 text-xs text-emerald-600">Pas de session</span>
+                                </div>
+                                }
                             </div>
                           )
                         })}

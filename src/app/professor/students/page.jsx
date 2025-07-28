@@ -108,10 +108,6 @@ useEffect(()=>{
                     <Download className="mr-2 h-4 w-4" />
                     Export
                   </Button>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Add Student
-                  </Button>
                 </div>
               </div>
 

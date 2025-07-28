@@ -70,10 +70,12 @@ export default function DashboardLayout({  children } ) {
             padding: 20px 20px 20px 20px;
             text-align:center;
 
-            };
+            }
 
             .user-name{
                 margin-bottom: 10px;
+                background-color: #f8fafc !important;
+                border-radius: 5px !important;
             }
             
             .user-logout{
@@ -129,7 +131,7 @@ export default function DashboardLayout({  children } ) {
                     <Link
                     href="/student/schedule"
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
-                        isActive('student/schedule')
+                        isActive('/student/schedule')
                             ? 'bg-slate-800 text-white'
                             : 'text-slate-300 hover:text-white hover:bg-slate-800'
                         }`}
@@ -190,7 +192,7 @@ export default function DashboardLayout({  children } ) {
                             <div className="detail-user" >
                                 <div className="user-name border-slate-600 hover:bg-slate-700">
                                     
-                                    <p className="font-medium text-sm mb-2 break-words">
+                                    <p className="font-medium text-sm mb-2 break-words text-black">
                                         {student?.username || 'USER'}
                                     </p>
                                 </div>

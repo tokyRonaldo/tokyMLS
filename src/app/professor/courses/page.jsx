@@ -92,9 +92,12 @@ export default function CoursesPage() {
       setLoading(false)
         return;
       }
-      const result= await response.json();
+      //const result= await response.json();
       setLoading(false)
-      setListCours(result.data)
+      setListCours(
+        prev=>prev.filter(cours=>cours.id != id)
+      )
+      //setListCours(result.data)
 
     }
     catch(e){
@@ -178,10 +181,11 @@ export default function CoursesPage() {
                       <Card key={i} className="bg-white border-none shadow-sm overflow-hidden">
                         <div className="relative">
                           <img
-                            src={cours.image ?? `/placeholder.svg?height=160&width=320&text=Course ${i + 1}`}
+                            src={cours.image ? `/uploads/${cours.image}` : `/placeholder.svg?height=160&width=320&text=Course ${i + 1}`}
                             alt={`Course ${i + 1}`}
                             className="object-cover w-full h-40"
                           />
+
                           <div className="absolute top-3 right-3 bg-white text-slate-700 text-xs px-2 py-1 rounded-full font-medium">
                             {["Active", "Draft", "Popular", "New", "Archived", "Upcoming"][i]}
                           </div>
@@ -193,7 +197,7 @@ export default function CoursesPage() {
                             </CardTitle>
                           </div>
                           <CardDescription className="flex justify-between">
-                            <span>Students: {}</span>
+                            <span>Students: {cours._count.suivis}</span>
                             
                           </CardDescription>
                         </CardHeader>

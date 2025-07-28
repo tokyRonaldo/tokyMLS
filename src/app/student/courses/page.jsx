@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useEffect, useState } from "react"
+import '../../loading.css'
 
 
 export default function CoursesPage() {
@@ -19,6 +20,7 @@ export default function CoursesPage() {
 
 
   async function getAllListCours(type){
+    setLoading(true);
     try{
       const response= await fetch(`/api/student/cours/?type=${encodeURIComponent(type)}&userId=${user.id}`,{
         method : 'GET',
@@ -28,6 +30,7 @@ export default function CoursesPage() {
         },
         //body: JSON.stringify({ type: type }),
       });
+      setLoading(false)
       if(!response.ok){
         console.log('erreur')
         return;
@@ -36,11 +39,13 @@ export default function CoursesPage() {
       console.log(result);
       setAllListCours(result);
     }catch(e){
+      setLoading(false)
       console.error('error',e.message);
     }
   }
 
   async function handleEnrollNow(id){
+    setLoading(true)
     try{
       const response= await fetch(`/api/student/cours/?id=${encodeURIComponent(id)}&userId=${user.id}`,{
         method : 'GET',
@@ -50,6 +55,7 @@ export default function CoursesPage() {
         },
         //body: JSON.stringify({ type: type }),
       });
+      setLoading(false)
       if(!response.ok){
         console.log('erreur')
         return;
@@ -60,6 +66,7 @@ export default function CoursesPage() {
       getAllListCours('all');
       //setAllListCours(result);
     }catch(e){
+      setLoading(false)
       console.error('error',e.message);
     }
 
@@ -123,7 +130,7 @@ export default function CoursesPage() {
                     Completed
                   </TabsTrigger>
                   <TabsTrigger
-                    value="popular"
+                    value="popular" onClick={()=>{getAllListCours('popular')}}
                     className="rounded-md data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-600"
                   >
                     Popular
@@ -142,7 +149,11 @@ export default function CoursesPage() {
                         </Link>
                         <CardHeader>
                           <div className="flex justify-between">
-                            <CardTitle className="line-clamp-1">{cours.nom}</CardTitle>
+                            <CardTitle className="line-clamp-1">
+                            <Link href={"/student/courses/"+cours.id}>
+                              {cours.nom}
+                              </Link>
+                              </CardTitle>
                             <span
                               className="text-xs font-medium px-2 py-1 rounded-full"
                               style={{

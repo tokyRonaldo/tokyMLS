@@ -39,8 +39,9 @@ export default function students(){
   const [loading, setLoading] = useState(false);
   const [listStudents, setListStudents] = useState([]);
 
-  let user= localStorage.getItem('user');
-  const formateur= JSON.parse(user);
+  const [token, setToken] = useState();
+  const [formateur, setFormateur] = useState(null);
+
 
   const handleListeStudents= async()=>{
     setLoading(true);
@@ -84,9 +85,25 @@ export default function students(){
       );
   }
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+  
+      if (storedUser && storedToken) {
+        setFormateur(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    }
+
+}, [])
+
+
 useEffect(()=>{
-  handleListeStudents()
-},[])
+  if (formateur && token) {
+    handleListeStudents()
+  }
+},[formateur, token])
 
     return(
         <>

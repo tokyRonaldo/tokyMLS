@@ -163,7 +163,7 @@ export default function InstructorDashboardLayout({children}) {
                 <Link
                     href="/professor/students"
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
-                    isActive('/instructor/students')
+                    isActive('/professor/students')
                         ? 'bg-slate-800 text-white'
                         : 'text-slate-300 hover:text-white hover:bg-slate-800'
                     }`}

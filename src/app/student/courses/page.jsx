@@ -14,15 +14,15 @@ import '../../loading.css'
 export default function CoursesPage() {
   const [allListCours,setAllListCours]=useState([]);
   const [loading, setLoading] = useState(false)
-  const token= localStorage.getItem('token');
-  let userStorage= localStorage.getItem('user');
-  const user= JSON.parse(userStorage);
+
+  const [token, setToken] = useState();
+  const [student, setStudent] = useState(null);
 
 
   async function getAllListCours(type){
     setLoading(true);
     try{
-      const response= await fetch(`/api/student/cours/?type=${encodeURIComponent(type)}&userId=${user.id}`,{
+      const response= await fetch(`/api/student/cours/?type=${encodeURIComponent(type)}&userId=${student.id}`,{
         method : 'GET',
         headers :{
           "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export default function CoursesPage() {
   async function handleEnrollNow(id){
     setLoading(true)
     try{
-      const response= await fetch(`/api/student/cours/?id=${encodeURIComponent(id)}&userId=${user.id}`,{
+      const response= await fetch(`/api/student/cours/?id=${encodeURIComponent(id)}&userId=${student.id}`,{
         method : 'GET',
         headers :{
           "Content-Type": "application/json",
@@ -72,10 +72,27 @@ export default function CoursesPage() {
 
   }
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+  
+      if (storedUser && storedToken) {
+        setStudent(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    }
+
+}, [])
+
+
   useEffect(()=>{
-    console.log('tesssssss');
-    getAllListCours('all')
-  },[])
+    if (student && token) {
+      console.log('tesssssss');
+      getAllListCours('all')
+    }
+  },[student,token])
+
   return (
 
         <>

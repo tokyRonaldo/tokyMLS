@@ -69,8 +69,8 @@ export default function InstructorSchedule() {
 
   const [loading, setLoading] = useState(false);
 
-  let user= localStorage.getItem('user');
-  const student= JSON.parse(user);
+  const [token, setToken] = useState(null);
+  const [student, setStudent] = useState(null);
 
   const monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -128,7 +128,7 @@ export default function InstructorSchedule() {
 
 
   const handleListeSchedule= async()=>{
-    const response= await fetch(`/api/student/schedule?student_id=${student.id}`, {
+    const response= await fetch(`/api/student/schedule?student_id=${student?.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -144,10 +144,25 @@ export default function InstructorSchedule() {
       setListSchedule(result.visioSessions);
   }
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+  
+      if (storedUser && storedToken) {
+        setStudent(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    }
+
+  }, [])
+
   useEffect(()=>{
+    if (student && token) {
     console.log(localStorage.getItem('token'));
     handleListeSchedule();
-  },[])
+    }
+  },[student,token])
 
   return (
     <>

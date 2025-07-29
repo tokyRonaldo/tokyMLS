@@ -118,7 +118,7 @@ const handleFileChange = (e)=>{
   }
 
   const handleGetCours = async (id)=>{
-
+    setLoading(true);    
     try{
         const fetchApi= await fetch(`/api/professor/cours?id=${id}`,{
             method : 'GET',
@@ -127,6 +127,7 @@ const handleFileChange = (e)=>{
               'Authorization' : 'Bearer ' + token
              }
         })
+        setLoading(false);
         if (!fetchApi.ok) {
           console.error('Erreur lors de la récupération du cours');
           return;
@@ -159,6 +160,7 @@ const handleFileChange = (e)=>{
 
 
     }catch(e){
+        setLoading(false);
         console.error(e);
     }
   }

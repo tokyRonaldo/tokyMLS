@@ -78,8 +78,8 @@ export default function InstructorSchedule() {
   const [openDropMenuId, setOpenDropMenuId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  let user= localStorage.getItem('user');
-  const formateur= JSON.parse(user);
+  const [token, setToken] = useState();
+  const [formateur, setFormateur] = useState(null);
 
   const monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -243,11 +243,28 @@ export default function InstructorSchedule() {
   }
 
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+  
+      if (storedUser && storedToken) {
+        setFormateur(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    }
+
+}, [])
+
+
   useEffect(()=>{
-    console.log(localStorage.getItem('token'));
-    handleListeSchedule();
-    handleListeCours();
-  },[])
+    if (formateur && token) {
+
+      console.log(localStorage.getItem('token'));
+      handleListeSchedule();
+      handleListeCours();
+    }
+  },[formateur, token])
 
   return (
     <>

@@ -25,6 +25,8 @@ export default function Login() {
 
     const handleLogin= async(e)=>{
         setLoading(true)
+        setErrorLogin(false)
+
         e.preventDefault();
         try{
             const login= await fetch('/api/auth/login',{
@@ -37,30 +39,23 @@ export default function Login() {
                 })
           
             })
-            if(login.ok){
-                const result = await login.json();
-                localStorage.setItem('token',result.token);
-                localStorage.setItem('user',JSON.stringify(result.data));
-                // Redirection en fonction du type d'utilisateur
-                setLoading(false)
+            // 💡 Déclencher une exception manuellement si la réponse n'est pas OK
+            if (!login.ok) {
+                const errorRes = await login.json(); // si ton backend renvoie un message d'erreur
+                setLoading(false);
+                throw new Error(errorRes.message || 'Échec de la connexion');
+        }
 
-                if (result.data.role === "etudiant") {
-                  router.push("/student/dashboard")
-                } else {
-                  router.push("/professor/dashboard")
-                }
-                console.log('loading');
-                setLoading(false)
+            const result = await login.json();
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('user', JSON.stringify(result.data));
+            setLoading(false);
 
-              }
-            else{
-                setErrorLogin(true)
-                setErrorMsg('Une erreur est survenue')
-                toast.error('Une erreur est survenue');
-                setLoading(false)
-
-
-                console.log('error')
+            // Redirection selon le rôle
+            if (result.data.role === "etudiant") {
+                router.push("/student/dashboard");
+            } else {
+                router.push("/professor/dashboard");
             }
         
         
@@ -92,7 +87,7 @@ export default function Login() {
         {errorLogin && (
         <div className='div-error bg-red-300 rounded p-2 pt-7 px-3 text-black relative' >
             <span className='absolute top-0.5 right-2 cursor-pointer px-2 rounded-full hover:opacity-60 hover:bg-slate-100 hover:bg-emerald-700' 
-            onClick={setErrorLogin(false)}
+            onClick={()=>setErrorLogin(false)}
             >x</span>
             <p className='break-words  p-2' style={{color:'#0c0c0dc4'}}>
                 {errorMsg}

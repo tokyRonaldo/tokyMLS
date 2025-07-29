@@ -32,11 +32,8 @@ import '../loading.css'
 export default function InstructorDashboardLayout({children}) {
     const [showDetail,setShowDetail]=useState(false)
     const [loading, setLoading] = useState(false);
+    const [formateur, setFormateur] = useState(false);
     const router = useRouter()
-
-    const token= localStorage.getItem('token');
-    let user= localStorage.getItem('user');
-    const formateur= JSON.parse(user);
 
     const pathname = usePathname();
     const isActive = (path) => pathname === path;
@@ -48,11 +45,25 @@ export default function InstructorDashboardLayout({children}) {
         router.push("/auth/login")
 
     }
-    useEffect(()=>{
-        if (!user && !token) {
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+          const user = localStorage.getItem('user');
+          const token= localStorage.getItem('token')
+          console.log(user);
+          if (user && token) {
+            try {
+                setFormateur(JSON.parse(user))
+                
+            } catch (e) {
+              console.error("Erreur parsing user:", e)
+            }
+          }
+          else{
             router.push("/auth/login")
+          }
         }
-    },[])
+    }, [])
+
 
 
   return (

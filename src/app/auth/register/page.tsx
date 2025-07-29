@@ -28,6 +28,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("")
   const [userType, setUserType] = useState("etudiant")
+  const [errorLogin, setErrorLogin] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   interface JwtPayload {
     id: number;
@@ -41,6 +43,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     setError("")
+    setErrorLogin(false)
 
     const formData = new FormData(e.currentTarget)
     console.log(e.target);
@@ -93,7 +96,6 @@ export default function RegisterPage() {
 
       })
       if(reponse.ok){
-      toast.success('Données chargées avec succès');
 
         const result = await reponse.json();
         const decoded = jwtDecode<JwtPayload>(result.token);
@@ -112,11 +114,16 @@ export default function RegisterPage() {
           router.push("/professor/dashboard")
         }
       }
+      else{
+        const errorRes = await reponse.json(); // si ton backend renvoie un message d'erreur
+        setLoading(false);
+        throw new Error(errorRes.message || 'Échec de la connexion');
+      }
 
 
     } catch (err : any) {
-      setError("Une erreur est survenue lors de l'inscription")
-      toast.error(err.message || 'Une erreur est survenue');
+      setErrorLogin(true)
+      setErrorMsg(err.message || 'Une erreur est survenue')
 
       console.error(err)
     } finally {
@@ -139,6 +146,18 @@ export default function RegisterPage() {
           </div>
           <p className="mt-2 text-slate-500">Créez votre compte pour commencer à apprendre</p>
         </div>
+
+        {errorLogin && (
+        <div className='div-error bg-red-300 rounded p-2 pt-7 px-3 text-black relative' >
+            <span className='absolute top-0.5 right-2 cursor-pointer px-2 rounded-full hover:opacity-60 hover:bg-slate-100 hover:bg-emerald-700' 
+            onClick={()=>setErrorLogin(false)}
+            >x</span>
+            <p className='break-words  p-2' style={{color:'#0c0c0dc4'}}>
+                {errorMsg}
+            </p>
+        </div>)
+        }
+
 
         <Card className="border-none shadow-md">
           <CardHeader>

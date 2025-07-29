@@ -1,6 +1,6 @@
 'use client'
 import Link from "next/link"
-import { useEffect } from "react"
+import { useEffect,useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { useUser } from "@/app/professor/context/UserContext"
@@ -24,7 +24,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function Dashboard() {
   const {userData,setUserData} = useUser()
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
+    setLoading(false)
     console.log(userData);
   /*  setUserData({
       ...userData,

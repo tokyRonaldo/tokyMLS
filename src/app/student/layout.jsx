@@ -21,12 +21,10 @@ import '../loading.css'
 export default function DashboardLayout({  children } ) {
     const [showDetail,setShowDetail]=useState(false)
     const [loading, setLoading] = useState(false);
+    const [student, setStudent] = useState(false);
 
     const router = useRouter()
   
-      const token= localStorage.getItem('token');
-      let user= localStorage.getItem('user');
-      const student= JSON.parse(user);
 
       const pathname = usePathname();
       const isActive = (path) => pathname === path;
@@ -49,11 +47,25 @@ export default function DashboardLayout({  children } ) {
         }
         return child
       })*/
-        useEffect(()=>{
-            if (!user && !token) {
-                router.push("/auth/login")
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const user = localStorage.getItem('user');
+            const token= localStorage.getItem('token')
+            console.log(user);
+            if (user && token) {
+            try {
+                setStudent(JSON.parse(user))
+                
+            } catch (e) {
+                console.error("Erreur parsing user:", e)
             }
-        },[])
+            }
+            else{
+            router.push("/auth/login")
+            }
+        }
+    }, [])
+    
   return (
     <UserProvider>
         <style jsx>{`

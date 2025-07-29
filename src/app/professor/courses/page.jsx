@@ -42,16 +42,34 @@ export default function CoursesPage() {
   //const token= localStorage.getItem('token');
   const [listCours,setListCours]=useState([]);
   const [loading, setLoading] = useState(false);
-  let user= localStorage.getItem('user');
-  const formateur= JSON.parse(user);
+  const [token, setToken] = useState();
+  const [formateur, setFormateur] = useState(null);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+  
+      if (storedUser && storedToken) {
+        setFormateur(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    }
 
-  useEffect(() => { getListCours()},[])
+}, [])
+
+useEffect(() => {
+  if (formateur && token) {
+    getListCours();
+  }
+}, [formateur, token]);
 
   async function getListCours(){
     setLoading(true)
 
     try{
+      console.log(formateur)
+      console.log('testttttttttt')
       const response= await fetch(`/api/cours?formateur_id=${formateur.id}`,{
         method : 'GET',
         headers :{

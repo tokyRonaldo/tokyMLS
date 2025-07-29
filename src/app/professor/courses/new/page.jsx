@@ -74,8 +74,8 @@ export default function NewCourse() {
   const [coursVideoPreview, setCoursVideoPreview] = useState(null);
   const [coursSubtitle, setCoursSubtitle] = useState('');
   const [loading, setLoading] = useState(false);
-  const token= localStorage.getItem('token');
-  const user= JSON.parse(localStorage.getItem('user'));
+  const [token, setToken] = useState();
+  const [formateur, setFormateur] = useState();
   const router = useRouter()
 
 
@@ -85,9 +85,21 @@ export default function NewCourse() {
     { title: "HTML Elements and Attributes", type: "video", completed: false },
     { title: "HTML Forms", type: "text", completed: false },
   ]
-  useEffect(()=>{
-    //setListLesson(lessonArray)
-  },[])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+  
+      if (storedUser && storedToken) {
+        setFormateur(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    }
+
+}, [])
+
+
 
   const handleFileChange = (e)=>{
     e.preventDefault();
@@ -190,7 +202,7 @@ export default function NewCourse() {
       formData.append("coursContent", coursContent);
       formData.append("coursCategory", coursCategory);
       formData.append("coursSubtitle", coursSubtitle);
-      formData.append("userId", user.id);
+      formData.append("userId", formateur.id);
   
       // Fichiers (si ce sont bien des File)
       if (coursImage instanceof File) {

@@ -36,6 +36,8 @@ import { format, addDays, subDays, startOfWeek, isSameDay } from "date-fns"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useEffect, useState } from "react"
 import '../../loading.css'
+import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 
 
 export default function CoursesPage() {
@@ -44,6 +46,8 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState();
   const [formateur, setFormateur] = useState(null);
+  const router = useRouter()
+  const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -63,6 +67,19 @@ useEffect(() => {
     getListCours();
   }
 }, [formateur, token]);
+
+const handleClick = (e,url) => {
+  console.log(url)
+  console.log('essaiiii')
+  e.preventDefault();
+  setLoading(true);
+  router.push(url);
+
+};
+// Dès que pathname change => stop loading
+useEffect(() => {
+  setLoading(false);
+  }, [pathname]);
 
   async function getListCours(){
     setLoading(true)
@@ -140,12 +157,10 @@ useEffect(() => {
                   <h1 className="text-3xl font-bold tracking-tight">My Courses</h1>
                   <p className="text-slate-500">Manage and organize your course content</p>
                 </div>
-                <Link href="/professor/courses/new">
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
+                  <Button onClick={(e)=>handleClick(e,"/professor/courses/new")} className="bg-emerald-600 hover:bg-emerald-700">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Create New Course
                   </Button>
-                </Link>
               </div>
 
               <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-white p-4 rounded-lg shadow-sm">
@@ -225,12 +240,10 @@ useEffect(() => {
                           </div>
                         </CardContent>
                         <CardFooter className="flex gap-2">
-                          <Link href={`/professor/courses/${cours.id}`} className="flex-1">
-                            <Button variant="outline" className="w-full border-slate-200">
+                            <Button onClick={(e)=>handleClick(e,`/professor/courses/${cours.id}`)} variant="outline" className="w-full border-slate-200">
                               <Edit className="h-4 w-4" />
                               Edit
                             </Button>
-                          </Link>
                           <Link href="#" className="flex-1">
                             <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
                               <Eye className="h-4 w-4" />
@@ -295,10 +308,10 @@ useEffect(() => {
                                       </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                      <Link href={`/professor/courses/${cours.id}`} className="flex w-full">
+                                      <a onClick={(e)=>handleClick(e,`/professor/courses/${cours.id}`)}  className="flex w-full">
                                         <Edit className="h-4 w-4 mr-2" />
                                         Edit
-                                      </Link>
+                                      </a>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem className="text-red-600" onClick={(e)=>handleDeleteCours(cours.id,e)}>
                                       <Trash2 className="h-4 w-4 mr-2" />

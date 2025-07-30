@@ -22,13 +22,10 @@ export default function DashboardLayout({  children } ) {
     const [showDetail,setShowDetail]=useState(false)
     const [loading, setLoading] = useState(false);
     const [student, setStudent] = useState(false);
+    const pathname = usePathname();
+    const isActive = (path) => pathname === path;
 
     const router = useRouter()
-  
-
-      const pathname = usePathname();
-      const isActive = (path) => pathname === path;
-  
   
       async function handleLogout(){
         setLoading(true)
@@ -37,6 +34,16 @@ export default function DashboardLayout({  children } ) {
         router.push("/auth/login")
   
       }
+
+
+    const handleClick = (e,url) => {
+        console.log(url)
+        console.log('essaiiii')
+        e.preventDefault();
+        setLoading(true);
+        router.push(url);
+
+    };
   
     //const childWithProps = cloneElement(children, { user });
     /*const childrenWithProps = Children.map(children, (child) => {
@@ -65,6 +72,12 @@ export default function DashboardLayout({  children } ) {
             }
         }
     }, [])
+
+    // Dès que pathname change => stop loading
+    useEffect(() => {
+        setLoading(false);
+    }, [pathname]);
+
     
   return (
     <UserProvider>
@@ -101,6 +114,9 @@ export default function DashboardLayout({  children } ) {
                 font-size:13.5px;
                 color: #8596ae;
             }
+            a{
+                cursor:pointer;
+            }
       `}</style>
 
     <div className="flex min-h-screen w-full flex-col">
@@ -118,8 +134,7 @@ export default function DashboardLayout({  children } ) {
                     <span className="text-emerald-400">EduLearn LMS</span>
                 </div>
                 <nav className="grid gap-3">
-                    <Link
-                    href="/student/dashboard"
+                    <a onClick={(e)=>handleClick(e,"/student/dashboard")}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                         isActive('/student/dashboard')
                             ? 'bg-slate-800 text-white'
@@ -128,9 +143,8 @@ export default function DashboardLayout({  children } ) {
                     >
                     <LayoutDashboard className="h-5 w-5 text-emerald-400" />
                     Dashboard
-                    </Link>
-                    <Link
-                    href="/student/courses"
+                    </a>
+                    <a onClick={(e)=>handleClick(e,"/student/courses")}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                         isActive('/student/courses')
                             ? 'bg-slate-800 text-white'
@@ -139,9 +153,8 @@ export default function DashboardLayout({  children } ) {
                     >
                     <BookOpen className="h-5 w-5" />
                     My Courses
-                    </Link>
-                    <Link
-                    href="/student/schedule"
+                    </a>
+                    <a onClick={(e)=>handleClick(e,"/student/schedule")}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                         isActive('/student/schedule')
                             ? 'bg-slate-800 text-white'
@@ -150,21 +163,19 @@ export default function DashboardLayout({  children } ) {
                     >
                     <Clock className="h-5 w-5" />
                     Schedule
-                    </Link>
-                    <Link
-                    href="/progress"
+                    </a>
+                    <a onClick={(e)=>handleClick(e,"#")}
                     className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                     >
                     <LineChart className="h-5 w-5" />
                     Progress
-                    </Link>
-                    <Link
-                    href="/community"
+                    </a>
+                    <a onClick={(e)=>handleClick(e,"#")}
                     className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                     >
                     <Users className="h-5 w-5" />
                     Community
-                    </Link>
+                    </a>
                 </nav>
 
                 <div className="mt-auto pt-20">

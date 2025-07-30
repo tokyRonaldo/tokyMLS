@@ -1,8 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useState } from "react"
 import { GraduationCap, Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -12,11 +10,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Loading from '../../loading'
 import '../../loading.css'
 import toast from 'react-hot-toast';
+import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
+import React, { useState,useEffect } from "react"
 
 
 
 export default function Login() {
     const router = useRouter()
+    const pathname = usePathname();
     const [email,setEmail]=useState(null)
     const [password,setPassword]=useState(null)
     const [loading, setLoading] = useState(false);
@@ -41,6 +43,7 @@ export default function Login() {
             })
             // 💡 Déclencher une exception manuellement si la réponse n'est pas OK
             if (!login.ok) {
+                setLoading(false)
                 const errorRes = await login.json(); // si ton backend renvoie un message d'erreur
                 setLoading(false);
                 throw new Error(errorRes.message || 'Échec de la connexion');
@@ -49,7 +52,6 @@ export default function Login() {
             const result = await login.json();
             localStorage.setItem('token', result.token);
             localStorage.setItem('user', JSON.stringify(result.data));
-            setLoading(false);
 
             // Redirection selon le rôle
             if (result.data.role === "etudiant") {
@@ -62,11 +64,17 @@ export default function Login() {
         
         }catch(error){
             console.error(error)
+            setLoading(false)
             setErrorLogin(true)
             setErrorMsg(error.message || 'Une erreur est survenue')
             toast.error(err.message || 'Une erreur est survenue');
         }
     }
+
+    useEffect(() => {
+        setLoading(false);
+        }, [pathname]);
+
     return (
 <div className="flex flex-1 min-h-screen justify-center items-center bg-slate-50">
     {loading && (

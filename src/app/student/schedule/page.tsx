@@ -128,12 +128,14 @@ export default function InstructorSchedule() {
 
 
   const handleListeSchedule= async()=>{
+    setLoading(true)
     const response= await fetch(`/api/student/schedule?student_id=${student?.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         }
       });
+      setLoading(false)
       if(!response.ok){
         console.error('error')
         return;
@@ -273,7 +275,7 @@ export default function InstructorSchedule() {
                                 ))}
                               </div>
 
-                              {isCurrentMonthDay && <div className=" border-emerald-300 rounded-md p-2 " style={{border:'1px solid #5ee9b5'}}>
+                              {(isCurrentMonthDay && (dayConferences?.length < 1) ) && <div className=" border-emerald-300 rounded-md p-2 " style={{border:'1px solid #5ee9b5'}}>
                                   <span className="w-full mt-2 h-8 text-xs text-emerald-600">Pas de session</span>
                                 </div>
                                 }

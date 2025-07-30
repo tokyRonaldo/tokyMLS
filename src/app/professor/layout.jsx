@@ -34,7 +34,6 @@ export default function InstructorDashboardLayout({children}) {
     const [loading, setLoading] = useState(false);
     const [formateur, setFormateur] = useState(false);
     const router = useRouter()
-
     const pathname = usePathname();
     const isActive = (path) => pathname === path;
 
@@ -45,6 +44,16 @@ export default function InstructorDashboardLayout({children}) {
         router.push("/auth/login")
 
     }
+
+    const handleClick = (e,url) => {
+        console.log(url)
+        console.log('essaiiii')
+        e.preventDefault();
+        setLoading(true);
+        router.push(url);
+
+    };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
           const user = localStorage.getItem('user');
@@ -64,7 +73,10 @@ export default function InstructorDashboardLayout({children}) {
         }
     }, [])
 
-
+    // Dès que pathname change => stop loading
+    useEffect(() => {
+    setLoading(false);
+    }, [pathname]);
 
   return (
           
@@ -101,6 +113,10 @@ export default function InstructorDashboardLayout({children}) {
             .user-name-p{
                 font-size:13.5px;
             }
+
+            a{
+                cursor:pointer;
+            }
       `}</style>
         <div className="flex min-h-screen w-full flex-col">
         {loading && (
@@ -136,8 +152,7 @@ export default function InstructorDashboardLayout({children}) {
                 </div>
             </div>
             <nav className="grid gap-3">
-                <Link
-                    href="/professor/dashboard"
+                <a onClick={(e)=>handleClick(e,"/professor/dashboard")}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                     isActive('/professor/dashboard')
                         ? 'bg-slate-800 text-white'
@@ -146,10 +161,8 @@ export default function InstructorDashboardLayout({children}) {
                 >
                     <LayoutDashboard className="h-5 w-5 text-emerald-400" />
                     Dashboard
-                </Link>
-
-                <Link
-                    href="/professor/courses"
+                </a>
+                <a onClick={(e)=>handleClick(e,"/professor/courses")}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                     isActive('/professor/courses')
                         ? 'bg-slate-800 text-white'
@@ -158,10 +171,9 @@ export default function InstructorDashboardLayout({children}) {
                 >
                     <BookOpen className="h-5 w-5" />
                     My Courses
-                </Link>
+                </a>
 
-                <Link
-                    href="/professor/students"
+                <a onClick={(e)=>handleClick(e,"/professor/students")}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                     isActive('/professor/students')
                         ? 'bg-slate-800 text-white'
@@ -170,10 +182,8 @@ export default function InstructorDashboardLayout({children}) {
                 >
                     <Users className="h-5 w-5" />
                     Students
-                </Link>
-
-                <Link
-                    href="/professor/schedule"
+                </a>
+                <a onClick={(e)=>handleClick(e,"/professor/schedule")}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors ${
                     isActive('/professor/schedule')
                         ? 'bg-slate-800 text-white'
@@ -182,23 +192,19 @@ export default function InstructorDashboardLayout({children}) {
                 >
                     <Clock className="h-5 w-5" />
                     Schedules
-                </Link>
-
-                <Link
-                    href="#"
+                </a>
+                <a onClick={(e)=>handleClick(e,"#")}
                     className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
                     <FileText className="h-5 w-5" />
                     Content
-                </Link>
-
-                <Link
-                    href="#"
+                </a>
+                <a onClick={(e)=>handleClick(e,"#")}
                     className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 >
                     <Settings className="h-5 w-5" />
                     Settings
-                </Link>
+                </a>
                 </nav>
             </div>
 

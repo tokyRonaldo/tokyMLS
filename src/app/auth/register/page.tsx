@@ -2,9 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { GraduationCap, Loader2 } from "lucide-react"
 
 import { jwtDecode } from 'jwt-decode';
@@ -17,14 +15,16 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
 import Loading from '../../loading'
 import '../../loading.css'
-
 import toast from 'react-hot-toast';
+import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
+import { useState,useEffect } from "react"
 
 export default function RegisterPage() {
   const router = useRouter()
+  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("")
   const [userType, setUserType] = useState("etudiant")
@@ -122,14 +122,18 @@ export default function RegisterPage() {
 
 
     } catch (err : any) {
+      setLoading(false)
       setErrorLogin(true)
       setErrorMsg(err.message || 'Une erreur est survenue')
 
       console.error(err)
-    } finally {
-      setLoading(false)
-    }
+    } 
   }
+
+  useEffect(() => {
+    setLoading(false);
+    }, [pathname]);
+
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-slate-50 p-4">

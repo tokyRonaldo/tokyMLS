@@ -138,9 +138,6 @@ export default function InstructorSchedule() {
   const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>,date = null) =>{
     e.preventDefault()
     setLoading(true);
-    console.log(date);
-
-    console.log(formateur);
     //c'est un objet
     const dataVisio={
       'formateur_id' : formateur.id, 
@@ -152,7 +149,6 @@ export default function InstructorSchedule() {
       'lienSchedule' : lienSchedule,
       'descriptionSchedule' : descriptionSchedule      
     }
-    console.log(dataVisio);
     try {
       const response = await fetch(`/api/professor/schedule?id=2`, {
         method: 'POST',
@@ -190,7 +186,6 @@ export default function InstructorSchedule() {
         return;
       }
       let result = await response.json();
-      console.log(result);
       setListSchedule(result);
   }
 
@@ -208,7 +203,6 @@ export default function InstructorSchedule() {
         return;
       }
       let result = await response.json();
-      console.log(result);
       setListCours(result);
   }
 
@@ -216,7 +210,6 @@ export default function InstructorSchedule() {
     e.preventDefault()
     setLoading(true)
 
-    console.log(formateur);
     //c'est un objet
     try {
       const response = await fetch(`/api/professor/schedule?id=${id}`, {
@@ -260,7 +253,6 @@ export default function InstructorSchedule() {
   useEffect(()=>{
     if (formateur && token) {
 
-      console.log(localStorage.getItem('token'));
       handleListeSchedule();
       handleListeCours();
     }
@@ -351,7 +343,7 @@ export default function InstructorSchedule() {
                       <Button variant="outline" className="border-slate-200">
                         Annuler
                       </Button>
-                      <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={(e:React.MouseEvent<HTMLButtonElement>)=>{console.log('tessttttt');handleAddVisio(e); }}>Programmer</Button>
+                      <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={(e:React.MouseEvent<HTMLButtonElement>)=>{handleAddVisio(e); }}>Programmer</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -436,7 +428,7 @@ export default function InstructorSchedule() {
                                   >
                                     <div className="flex items-center gap-1 mb-1">
                                       <Video className="h-3 w-3 text-emerald-600" />
-                                      <span className="font-medium text-emerald-800 truncate">{conference.title}</span>
+                                      <span className="font-medium text-emerald-800 truncate">{conference.titre}</span>
                                     </div>
                                     <div className="text-emerald-600 flex items-center gap-1">
                                       <Clock className="h-3 w-3" />
@@ -563,9 +555,11 @@ export default function InstructorSchedule() {
                           {listSchedule?.map((conference) => (
                             <TableRow key={conference.id}>
                               <TableCell className="font-medium">
-                                <Link href={`/instructor/schedule/${conference.id}`} className="hover:underline">
+                                <a
+                                //href={`/instructor/schedule/${conference.id}`}
+                                 className="hover:underline">
                                   {conference.titre}
-                                </Link>
+                                </a>
                               </TableCell>
                               <TableCell>{conference.cours.nom}</TableCell>
                               <TableCell>{format(conference.dateDebut, "dd/MM/yyyy")}</TableCell>
@@ -612,9 +606,9 @@ export default function InstructorSchedule() {
                                     </DropdownMenuItem>
                                     <DropdownMenuItem  >Modifier</DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Link href={`${conference.lienVisio ?? '#'}`} className="flex w-full">
+                                        <a  onClick={() => window.open(conference.lienVisio, "_blank")} className="flex w-full">
                                         Démarrer
-                                        </Link>
+                                        </a>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem className="text-red-600" onClick={(e:React.MouseEvent<HTMLButtonElement>) => {handleDeleteVisio(e,conference.id)}}>Supprimer</DropdownMenuItem>

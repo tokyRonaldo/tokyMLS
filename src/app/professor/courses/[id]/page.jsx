@@ -46,6 +46,8 @@ import { use } from 'react';
 import { useParams } from 'next/navigation';
 import '../../../loading.css'
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
+import toast from 'react-hot-toast';
 
 import { useEffect,useState } from "react"
 
@@ -76,6 +78,7 @@ export default function NewCourse() {
   const [token, setToken] = useState();
   const [formateur, setFormateur] = useState();
   const router = useRouter()
+  const pathname = usePathname();
 
   const params = useParams();
   const id = params.id;
@@ -156,8 +159,6 @@ const handleFileChange = (e)=>{
         }));
         setListLesson(arrayLesson)
 
-        console.log(resp);
-
 
     }catch(e){
         setLoading(false);
@@ -199,8 +200,6 @@ const handleFileChange = (e)=>{
   const handleAddLesson= async (e)=>{
     //e.preventDefault();
     if(isEditLesson){
-      console.log('is edit lesson true')
-      console.log(identifiantLesson)
       setListLesson(prev =>
         prev.map((lesson, index) =>
           index === identifiantLesson ? { ...lesson,
@@ -222,7 +221,6 @@ const handleFileChange = (e)=>{
   }
 
   const handleDeleteLesson=async (i) =>{
-    console.log('test suppr');
     setListLesson(prev =>
       prev.filter((_, index) => index !== i)
     );
@@ -239,7 +237,6 @@ const handleFileChange = (e)=>{
 
   const handleSubmitCours = async () => {
     setLoading(true);
-    console.log('subbbbmiiiiiiiiiiit')
     try {
       const formData = new FormData();
   
@@ -263,7 +260,6 @@ const handleFileChange = (e)=>{
   
       // listLesson est un tableau d'objets
       listLesson.forEach((lesson, index) => {
-        console.log(lesson.titleLesson)
         formData.append(`listLesson[${index}][title]`, lesson.titleLesson);
         formData.append(`listLesson[${index}][contenu]`, lesson.descriptionLesson);
         if (lesson.documentLesson instanceof File) {
@@ -299,7 +295,6 @@ const handleFileChange = (e)=>{
 
       const resp = await response.json();
       router.push("/professor/courses")
-      setLoading(false)
       toast.success('Données chargées avec succès');
 
     } catch (error) {
@@ -309,6 +304,18 @@ const handleFileChange = (e)=>{
 
     }
   };
+
+  const handleClick = (e,url) => {
+    e.preventDefault();
+    setLoading(true);
+    router.push(url);
+  
+  };
+  // Dès que pathname change => stop loading
+  useEffect(() => {
+    setLoading(false);
+    }, [pathname]);
+  
 
     return (
            <>

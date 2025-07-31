@@ -57,13 +57,9 @@ export default function students(){
         return;
       }
       let result = await response.json();
-      console.log(result);
-      console.log('testtttt');
       setListStudents(result);
   }
   const handleDeleteStudent= async (studentId) => {
-    console.log(studentId);
-    console.log('studentntnnnnn');
     setLoading(true);
     const response= await fetch(`/api/professor/students?formateur_id=${formateur.id}&student_id=${studentId}`, {
         method: 'DELETE',
@@ -77,8 +73,6 @@ export default function students(){
         return;
       }
       let result = await response.json();
-      console.log(result);
-      console.log('testtttt222');
       //setListStudents(result);
       setListStudents(prev =>
         prev.filter(student => student.id !== studentId)

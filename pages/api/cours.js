@@ -70,7 +70,6 @@ apiRoute.post(async (req, res) => {
 
   const coursImage = coursImageFile ? coursImageFile.filename : "";
   const coursVideo = coursVideoFile ? coursVideoFile.filename : "";
-    //console.log(Object.keys(prisma));
 
   //editer un cours
   if(coursId){
@@ -161,7 +160,6 @@ apiRoute.post(async (req, res) => {
       });
     }
     
-    console.log("✅ lessons", lessons);
 
     for (const [index, value] of lessons.entries()) {
       const lesson = await prisma.lesson.create({
@@ -190,7 +188,6 @@ apiRoute.post(async (req, res) => {
 apiRoute.get(async (req, res) => {
   try{
     const { formateur_id } = req.query;
-    console.log(formateur_id);
     if(formateur_id && formateur_id != undefined){
       const response = await prisma.cours.findMany({
         where: {

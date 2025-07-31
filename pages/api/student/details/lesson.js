@@ -17,7 +17,6 @@ const apiRoute = createRouter({
   });
 
   apiRoute.get(async (req, res) => {
-    console.log(req.query.id);
     const id=parseInt(req.query.id, 10)
     try{
       if(req.query.is_complet_lesson){

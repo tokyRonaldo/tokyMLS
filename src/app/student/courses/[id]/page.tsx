@@ -52,8 +52,6 @@ export default function CoursePage({params}: CoursePageProps) {
 
 
     async function getCoursDetails(): Promise<void> {
-        console.log(params.id);
-        console.log('herrrrrrrrrrrrrrrrrrre');
         try {
           const response = await fetch(`/api/student/details/cours?id=${params.id}`, {
             method: 'GET',
@@ -69,7 +67,6 @@ export default function CoursePage({params}: CoursePageProps) {
       
           // Typage de la réponse attendue (exemple)
           const data: any = await response.json();
-          console.log(data);
           setCoursDetail(data);
         } catch (error: any) {
           console.error('Erreur fetch :', error.message);

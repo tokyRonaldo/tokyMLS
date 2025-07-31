@@ -47,7 +47,7 @@ import '../../../loading.css'
 
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation"
-
+import { usePathname } from "next/navigation"
 
 import { useEffect,useState } from "react"
 
@@ -77,6 +77,7 @@ export default function NewCourse() {
   const [token, setToken] = useState();
   const [formateur, setFormateur] = useState();
   const router = useRouter()
+  const pathname = usePathname();
 
 
   const lessonArray=[
@@ -144,8 +145,6 @@ export default function NewCourse() {
   const handleAddLesson= async (e)=>{
     //e.preventDefault();
     if(isEditLesson){
-      console.log('is edit lesson true')
-      console.log(identifiantLesson)
       setListLesson(prev =>
         prev.map((lesson, index) =>
           index === identifiantLesson ? { ...lesson,
@@ -164,13 +163,9 @@ export default function NewCourse() {
       ]);
     }
     initializeVariable();
-    console.log('test beu');
-    console.log(listLesson);
-    console.log(identifiantLesson)
   }
 
   const handleDeleteLesson=async (i) =>{
-    console.log('test suppr');
     setListLesson(prev =>
       prev.filter((_, index) => index !== i)
     );
@@ -251,7 +246,6 @@ export default function NewCourse() {
       
       const resp = await response.json();
       router.push("/professor/courses")
-      setLoading(false)
       toast.success('Données chargées avec succès');
 
       console.log(resp);
@@ -261,6 +255,18 @@ export default function NewCourse() {
       console.error("Erreur lors de l'envoi du cours :", error);
     }
   };
+
+  const handleClick = (e,url) => {
+    e.preventDefault();
+    setLoading(true);
+    router.push(url);
+  
+  };
+  // Dès que pathname change => stop loading
+  useEffect(() => {
+    setLoading(false);
+    }, [pathname]);
+  
 
     return (
 

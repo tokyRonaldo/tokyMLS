@@ -36,7 +36,6 @@ export default function CoursesPage() {
         return;
       }
       const result= await response.json();
-      console.log(result);
       setAllListCours(result);
     }catch(e){
       setLoading(false)
@@ -61,8 +60,6 @@ export default function CoursesPage() {
         return;
       }
       const result= await response.json();
-      console.log('etooooooooooooooooo e');
-      console.log(result);
       getAllListCours('all');
       //setAllListCours(result);
     }catch(e){
@@ -88,7 +85,6 @@ export default function CoursesPage() {
 
   useEffect(()=>{
     if (student && token) {
-      console.log('tesssssss');
       getAllListCours('all')
     }
   },[student,token])

@@ -19,12 +19,7 @@ const apiRoute = createRouter({
   apiRoute.get(async (req, res) => {
     const { type, id,userId } = req.query;
     try{
-      console.log('testttttt');
-      console.log(id);
-
-      console.log('etttttttttttttt')
       if(id != undefined && userId !== undefined){
-        console.log('icccccccccccccc')
         const response= await prisma.suivreCours.create({
           data: {
             cours: {
@@ -39,7 +34,6 @@ const apiRoute = createRouter({
             }
           }
         })
-        console.log(response)
         
         return res.status(200).json(response);
       }

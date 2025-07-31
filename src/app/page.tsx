@@ -15,7 +15,6 @@ export default function Dashboard() {
   if(user){
 
     let parseUser=JSON.parse(user)
-  console.log(parseUser!.role);
 
     if(parseUser && parseUser.role == 'formateur' ){
       router.push("/professor/dashboard")
@@ -32,6 +31,5 @@ export default function Dashboard() {
     router.push("/auth/login")
 
   }
-  console.log('tssssssssssssssssss');
 
 }

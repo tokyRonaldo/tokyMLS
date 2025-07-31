@@ -53,7 +53,6 @@ export async function GET(request) {
      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
    }
   
-  console.log("----------------------------------ici------------------------------------------");
   
   // Exemple de récupération de données avec Prisma
    const users = await prisma.user.findMany();
@@ -72,7 +71,6 @@ export async function POST(request) {
 try{
 
   const body = await request.json();
-  console.log(body);
   const { username, email, password,role } = body;
   const hashedPassword = await bcrypt.hash(password, 10);
   // Exemple de création d'utilisateur avec Prisma

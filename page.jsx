@@ -56,7 +56,6 @@ export default function CoursesPage() {
         return;
       }
       const result= await response.json();
-      console.log(result);
       setListCours(result);
     }catch(e){
       console.error('error',e.message);

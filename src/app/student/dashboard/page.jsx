@@ -11,7 +11,6 @@ export default function Dashboard() {
   const {userData,setUserData} = useUser()
   const [loading, setLoading] = useState(false)
   useEffect(() => {
-    console.log(userData);
   /*  setUserData({
       ...userData,
       'name' :'nouveau nom'

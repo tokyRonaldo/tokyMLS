@@ -19,7 +19,6 @@ const apiRoute = createRouter({
   apiRoute.get(async (req, res) => {
     const { id } = req.query;
     try{
-      console.log(id);
         const cours = await prisma.cours.findUnique({
             where:{
                 id : Number(id)

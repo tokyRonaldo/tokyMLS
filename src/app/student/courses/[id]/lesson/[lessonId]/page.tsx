@@ -57,7 +57,6 @@ export default function LessonPage({ params }: { params: { id: string; lessonId:
 
 
   async function getLessonDetails(): Promise<void> {
-    console.log(params.id);
     try {
       const response = await fetch(`/api/student/details/lesson?id=${params.lessonId}`, {
         method: 'GET',
@@ -82,7 +81,6 @@ export default function LessonPage({ params }: { params: { id: string; lessonId:
       }
       setLessonDetail(data.lesson);
       setListLesson(data.listLesson);
-      console.log(listLesson)
     } catch (error: any) {
       console.error('Erreur fetch :', error.message);
     }

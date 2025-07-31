@@ -24,7 +24,6 @@ export async function GET(request) {
      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
    }
   
-  console.log("----------------------------------ici------------------------------------------");
   
   // Exemple de récupération de données avec Prisma
    const users = await prisma.user.findMany();
@@ -37,14 +36,11 @@ export async function POST(request) {
 try{
 
   const body = await request.json();
-  console.log(body);
   const { email,password } = body;
   // Exemple de création d'utilisateur avec Prisma
   const user = await prisma.user.findFirst({
     where: { email }
     });
-    console.log(user);
-    console.log('uusssssssssssssssseeeeeeeeeeerrrrr');
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return new Response(JSON.stringify({ error: 'Identifiants invalides' }), { status: 401 })
     }

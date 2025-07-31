@@ -27,12 +27,10 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(false)
-    console.log(userData);
   /*  setUserData({
       ...userData,
       'name' :'nouveau nom'
     })*/
-    console.log(userData)
     
   }, [userData]);
   const mettreAJourNom = () => {

@@ -119,8 +119,6 @@ const apiRoute = createRouter<NextApiRequest, NextApiResponse>({
 
   apiRoute.get(async (req, res) => {
     const formateur_id= req.query.formateur_id;
-    console.log('tessssssssssss');
-    console.log(formateur_id);
     try{
       const response=  await prisma.visioSession.findMany({
         where: {

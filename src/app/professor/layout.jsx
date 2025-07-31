@@ -46,8 +46,6 @@ export default function InstructorDashboardLayout({children}) {
     }
 
     const handleClick = (e,url) => {
-        console.log(url)
-        console.log('essaiiii')
         e.preventDefault();
         setLoading(true);
         router.push(url);
@@ -58,7 +56,6 @@ export default function InstructorDashboardLayout({children}) {
         if (typeof window !== 'undefined') {
           const user = localStorage.getItem('user');
           const token= localStorage.getItem('token')
-          console.log(user);
           if (user && token) {
             try {
                 setFormateur(JSON.parse(user))

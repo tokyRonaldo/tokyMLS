@@ -141,8 +141,6 @@ export default function InstructorSchedule() {
         return;
       }
       let result = await response.json();
-      console.log('dddddddddddddtest');
-      console.log(result.visioSessions);
       setListSchedule(result.visioSessions);
   }
 
@@ -161,7 +159,6 @@ export default function InstructorSchedule() {
 
   useEffect(()=>{
     if (student && token) {
-    console.log(localStorage.getItem('token'));
     handleListeSchedule();
     }
   },[student,token])
@@ -257,7 +254,7 @@ export default function InstructorSchedule() {
                                 {dayConferences?.map((conference) => (
                                   <div
                                     key={conference.id}
-                                    onClick={() => window.open(conference.lienVisio, "_blank")}
+                                    
                                     className="bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 rounded-md p-2 text-xs cursor-pointer transition-colors group"
                                   >
                                     <div className="flex items-center gap-1 mb-1">
@@ -268,7 +265,9 @@ export default function InstructorSchedule() {
                                       <Clock className="h-3 w-3" />
                                       <span>{format(new Date(conference.dateDebut), "HH:mm")}</span>
                                     </div>
-                                    <div className="text-emerald-700 text-xs mt-1 group-hover:underline">
+                                    <div className="text-emerald-700 text-xs mt-1 group-hover:underline"
+                                    onClick={() => window.open(conference.lienVisio, "_blank")}
+                                    >
                                       Cliquer pour rejoindre
                                     </div>
                                   </div>
@@ -383,14 +382,13 @@ export default function InstructorSchedule() {
                                         Voir les détails
                                       </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem  >Modifier</DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Link href={`${conference.lienVisio ?? '#'}`} className="flex w-full">
+                                        <a 
+                                        onClick={() => window.open(conference.lienVisio, "_blank")}
+                                        className="flex w-full">
                                         Démarrer
-                                        </Link>
+                                        </a>
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-red-600" >Supprimer</DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </TableCell>
@@ -421,7 +419,10 @@ export default function InstructorSchedule() {
                             <Button variant="outline" size="sm" className="border-slate-200">
                               <Link href={`/instructor/schedule/${conference.id}`}>Détails</Link>
                             </Button>
-                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700"
+                            onClick={() => window.open(conference.lienVisio, "_blank")}
+                            
+                            >
                               Démarrer
                             </Button>
                           </div>
@@ -443,16 +444,6 @@ export default function InstructorSchedule() {
                             <UsersIcon className="h-4 w-4 text-slate-400" />
                             <span> participants</span>
                           </div>
-                        </div>
-                        <div className="mt-3 flex items-center gap-2">
-                          <div className="text-sm font-medium">google meet:</div>
-                          <Link
-                            href={conference.lienVisio}
-                            target="_blank"
-                            className="text-sm text-blue-600 hover:underline truncate"
-                          >
-                            {conference.lienVision}
-                          </Link>
                         </div>
                       </CardContent>
                       <CardFooter className="border-t pt-4 flex justify-between">

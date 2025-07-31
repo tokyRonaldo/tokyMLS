@@ -69,8 +69,6 @@ useEffect(() => {
 }, [formateur, token]);
 
 const handleClick = (e,url) => {
-  console.log(url)
-  console.log('essaiiii')
   e.preventDefault();
   setLoading(true);
   router.push(url);
@@ -85,8 +83,6 @@ useEffect(() => {
     setLoading(true)
 
     try{
-      console.log(formateur)
-      console.log('testttttttttt')
       const response= await fetch(`/api/cours?formateur_id=${formateur.id}`,{
         method : 'GET',
         headers :{
@@ -102,7 +98,6 @@ useEffect(() => {
       }
       const result= await response.json();
       setLoading(false)
-      console.log(result);
       setListCours(result);
     }catch(e){
       setLoading(false)

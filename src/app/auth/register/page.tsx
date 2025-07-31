@@ -46,8 +46,6 @@ export default function RegisterPage() {
     setErrorLogin(false)
 
     const formData = new FormData(e.currentTarget)
-    console.log(e.target);
-    console.log('-------------------ici----------');
     const userName = formData.get("username") as string
     const email = formData.get("email") as string
     const password = formData.get("password") as string
@@ -61,7 +59,6 @@ export default function RegisterPage() {
       password: formData.get("password"),
       role: userType,
     }
-    console.log(formValues);
 
     try {
       // Validation simple
@@ -106,7 +103,6 @@ export default function RegisterPage() {
         }
         localStorage.setItem('token',result.token);
         localStorage.setItem('user',JSON.stringify(userDetail));
-        console.log(decoded);
         // Redirection en fonction du type d'utilisateur
         if (userType === "etudiant") {
           router.push("/student/dashboard")

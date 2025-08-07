@@ -2,14 +2,6 @@
 
 import Link from "next/link"
 import {
-  BookOpen,
-  GraduationCap,
-  LayoutDashboard,
-  Users,
-  FileText,
-  Settings,
-  Bell,
-  Menu,
   CalendarIcon,
   Plus,
   ChevronLeft,
@@ -22,7 +14,7 @@ import {
   Filter,
   ArrowUpDown,
 } from "lucide-react"
-import { format, addDays, subDays, startOfWeek, isSameDay } from "date-fns"
+import { format, subDays, startOfWeek, isSameDay } from "date-fns"
 import { fr } from "date-fns/locale"
 
 import { Button } from "@/components/ui/button"
@@ -50,7 +42,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import GlobalLoader from "../../../components/GlobalLoader" // 👈 à adapter selon ton chemin
 import { useEffect, useState } from "react"
 import '../../loading.css'
 
@@ -58,12 +49,8 @@ import '../../loading.css'
 export default function InstructorSchedule() {
   // Current date for the calendar
   const today = new Date()
-  const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 }) // Week starts on Monday
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [sessions, setSessions] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
   const [titreSchedule, setTitreSchedule] = useState<string | null>(null);
   const [coursSchedule, setCoursSchedule] = useState<string | null>(null);
   const [dateSchedule, setDateSchedule] = useState<string | null>(null);
@@ -78,8 +65,13 @@ export default function InstructorSchedule() {
   const [openDropMenuId, setOpenDropMenuId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [token, setToken] = useState();
-  const [formateur, setFormateur] = useState(null);
+
+  type Formateur = {
+      id: string
+  }
+
+  const [token, setToken] = useState<string | null>(null);
+  const [formateur, setFormateur] = useState<Formateur | null>(null);
 
   const monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -92,7 +84,6 @@ export default function InstructorSchedule() {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
     
@@ -106,15 +97,6 @@ export default function InstructorSchedule() {
     
     return days;
   };
-
-  const formatDate = (date : any) => {
-    return date.toISOString().split('T')[0];
-  };
-  /*
-  const getSessionsForDate = (date :any) => {
-    const dateStr = formatDate(date);
-    return sessions.filter(session => session.date === dateStr);
-  };*/
 
   const isCurrentMonth = (date : any) => {
     return date.getMonth() === currentDate.getMonth();
@@ -135,12 +117,12 @@ export default function InstructorSchedule() {
 
 
 
-  const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>,date = null) =>{
+  const handleAddVisio = async (e : React.MouseEvent<HTMLButtonElement>,date?: Date | null) =>{
     e.preventDefault()
     setLoading(true);
     //c'est un objet
     const dataVisio={
-      'formateur_id' : formateur.id, 
+      'formateur_id' : formateur?.id, 
       'titreChedule' : titreSchedule, 
       'coursSchedule' : coursSchedule,      
       'dateSchedule' : date ? format(new Date(date),'Y-MM-dd') : dateSchedule ,   
@@ -175,7 +157,7 @@ export default function InstructorSchedule() {
   }
 
   const handleListeSchedule= async()=>{
-    const response= await fetch(`/api/professor/schedule?formateur_id=${formateur.id}`, {
+    const response= await fetch(`/api/professor/schedule?formateur_id=${formateur?.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +173,7 @@ export default function InstructorSchedule() {
 
   const handleListeCours= async()=>{
 
-      const response= await fetch(`/api/cours?formateur_id=${formateur.id}`,{
+      const response= await fetch(`/api/cours?formateur_id=${formateur?.id}`,{
         method : 'GET',
         headers :{
           "Content-Type": "application/json",
@@ -491,7 +473,7 @@ export default function InstructorSchedule() {
                                   <DialogFooter>
                                     <Button variant="outline">Annuler</Button>
                                     <Button className="bg-emerald-600 hover:bg-emerald-700"
-                                      onClick={(e:React.MouseEvent<HTMLButtonElement>)=>{handleAddVisio(e,date); }}>
+                                      onClick={(e:React.MouseEvent<HTMLButtonElement>)=>handleAddVisio(e,date)  }>
                                       Ajouter
                                     </Button>
                                   </DialogFooter>
@@ -611,7 +593,7 @@ export default function InstructorSchedule() {
                                         </a>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-red-600" onClick={(e:React.MouseEvent<HTMLButtonElement>) => {handleDeleteVisio(e,conference.id)}}>Supprimer</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-red-600" onClick={(e: React.MouseEvent<any>) => {handleDeleteVisio(e,conference.id)}}>Supprimer</DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </TableCell>

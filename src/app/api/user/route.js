@@ -30,7 +30,6 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { requireAuth } from '@/lib/middleware/auth';
 
 // Fonction pour l'authentification adaptée au App Router
  async function authenticateRequest(request) {

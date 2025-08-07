@@ -1,10 +1,7 @@
 import path from "path";
-import fs from "fs";
 import multer from "multer";
 import { createRouter } from "next-connect";
 import getRawBody from 'raw-body';
-//import { PrismaClient } from "@prisma/client";
-import authMiddleware from "../../src/lib/middleware/auth";
 
 //import prisma from '@/lib/prisma';    
 //ca a causer bcp de bug // ajouter npx prisma generate
@@ -160,24 +157,6 @@ apiRoute.post(async (req, res) => {
       });
     }
     
-
-    for (const [index, value] of lessons.entries()) {
-      const lesson = await prisma.lesson.create({
-        data: {
-          title: value.title,
-          videoUrl: value.videoLesson,
-          document: value.documentLesson,
-          contenu: value.contenu,
-          cours: {
-            connect: {
-              id: cours.id
-            }
-          }
-        },
-      });
-    }
-
-
     res.status(200).json({ success: true, cours });
   } catch (e) {
     console.error(e);

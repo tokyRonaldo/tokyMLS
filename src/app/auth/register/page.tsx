@@ -15,9 +15,7 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import Loading from '../../loading'
 import '../../loading.css'
-import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { useState,useEffect } from "react"
@@ -46,10 +44,7 @@ export default function RegisterPage() {
     setErrorLogin(false)
 
     const formData = new FormData(e.currentTarget)
-    const userName = formData.get("username") as string
-    const email = formData.get("email") as string
     const password = formData.get("password") as string
-    const role = formData.get("userType") as string
     const confirmPassword = formData.get("confirmPassword") as string
     const acceptTerms = formData.get("acceptTerms") === "on"
 
@@ -117,7 +112,7 @@ export default function RegisterPage() {
       }
 
 
-    } catch (err : any) {
+    } catch (err : unknown) {
       setLoading(false)
       setErrorLogin(true)
       setErrorMsg(err.message || 'Une erreur est survenue')
@@ -225,9 +220,9 @@ export default function RegisterPage() {
               <div className="flex items-center space-x-2">
                 <Checkbox id="acceptTerms" name="acceptTerms" />
                 <Label htmlFor="acceptTerms" className="text-sm">
-                  J'accepte les{" "}
+                  J&apos;accepte les{" "}
                   <Link href="/terms" className="text-emerald-600 hover:underline">
-                    conditions d'utilisation
+                    conditions d&apos;utilisation
                   </Link>{" "}
                   et la{" "}
                   <Link href="/privacy" className="text-emerald-600 hover:underline">
@@ -251,7 +246,7 @@ export default function RegisterPage() {
                   <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-slate-500">Ou s'inscrire avec</span>
+                  <span className="bg-white px-2 text-slate-500">Ou s&apos;inscrire avec</span>
                 </div>
               </div>
 

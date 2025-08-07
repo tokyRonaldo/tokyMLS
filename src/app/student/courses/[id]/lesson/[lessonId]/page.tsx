@@ -8,20 +8,12 @@ import {
   BookOpen,
   CheckCircle,
   Clock,
-  Download,
   FileText,
-  GraduationCap,
-  LayoutDashboard,
-  Menu,
   MessageCircle,
-  Users,
-  Bell,
   ThumbsUp,
   Share2,
   Bookmark,
   MoreHorizontal,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -32,11 +24,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { use } from "react"
 
-export default function LessonPage({ params }: { params: { id: string; lessonId: string } }) {
-  let courseId = null
-  let lessonId = null
+interface LessonPageProps {
+  params: Promise<{
+    id: string
+    lessonId: string
+  }>
+}
+
+export default function LessonPage({ params }: LessonPageProps) {
+  const { id: courseId, lessonId } = use(params)
+
   const [isCompleted, setIsCompleted] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [comment, setComment] = useState("")
@@ -44,12 +43,12 @@ export default function LessonPage({ params }: { params: { id: string; lessonId:
   const [notes, setNotes] = useState("")
   const [loading, setLoading] = useState(false)
 
-  type Lesson={
-    id : Number,
-    title : String,
-    videoUrl : String,
-    contenu : String,
-    document : String
+  type Lesson = {
+    id: number
+    title: string
+    videoUrl: string
+    contenu: string
+    document: string
   }
 
   const [lessonDetail,setLessonDetail] = useState<Lesson | null>(null);
@@ -58,7 +57,7 @@ export default function LessonPage({ params }: { params: { id: string; lessonId:
 
   async function getLessonDetails(): Promise<void> {
     try {
-      const response = await fetch(`/api/student/details/lesson?id=${params.lessonId}`, {
+      const response = await fetch(`/api/student/details/lesson?id=${lessonId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -86,15 +85,26 @@ export default function LessonPage({ params }: { params: { id: string; lessonId:
     }
   }
   useEffect(()=>{
-     courseId = params.id
-     lessonId = params.lessonId
+     //courseId = params.id
+     //lessonId = params.lessonId
     getLessonDetails()
   },[])
-
-  let navigation={};
-  if (listLesson && params.lessonId) {
+  type Navigation = {
+    previous: { id: number; title: string } | null;
+    next: { id: number; title: string } | null;
+    current: number | null;
+    total: number;
+  };
+  
+  let navigation: Navigation = {
+    previous: null,
+    next: null,
+    current: null,
+    total: 0,
+  };
+  if (listLesson && lessonId) {
     // Convertir l'id en nombre si nécessaire
-    const currentIndex = listLesson.findIndex(lesson => lesson.id == Number(params.lessonId));
+    const currentIndex = listLesson.findIndex(lesson => lesson.id == Number(lessonId));
   
     if (currentIndex !== -1) {
        navigation = {
@@ -142,7 +152,7 @@ export default function LessonPage({ params }: { params: { id: string; lessonId:
   const handleCompleteLesson = async () => {
     //setIsCompleted(!isCompleted)
     try {
-      const response = await fetch(`/api/student/details/lesson?id=${params.lessonId}&is_complet_lesson=true`, {
+      const response = await fetch(`/api/student/details/lesson?id=${lessonId}&is_complet_lesson=true`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +208,11 @@ export default function LessonPage({ params }: { params: { id: string; lessonId:
                     </span>
                   </div>
                   <Progress
-                    value={(navigation?.current / navigation?.total) * 100}
+                    value={
+                      navigation.current !== null && navigation.total > 0
+                      ? (navigation.current / navigation.total) * 100
+                      : 0
+                    }
                     className="h-2 bg-slate-100"
                     indicatorClassName="bg-emerald-500"
                   />

@@ -1,6 +1,4 @@
 import { createRouter } from "next-connect";
-import getRawBody from 'raw-body';
-//import authMiddleware from "../../src/lib/middleware/auth";
 
 import { PrismaClient } from '../../../src/generated/prisma';
 const prisma = new PrismaClient();

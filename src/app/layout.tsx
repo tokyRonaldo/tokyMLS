@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Suspense } from "react";
-import GlobalLoader from "../components/GlobalLoader" // 👈 à adapter selon ton chemin
 import { Toaster } from 'react-hot-toast';
 
 const geistSans = Geist({

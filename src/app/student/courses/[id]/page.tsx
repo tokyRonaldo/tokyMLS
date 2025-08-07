@@ -19,16 +19,17 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useEffect, useState } from "react"
+import { useEffect, useState ,use} from "react"
 import { useParams } from "next/navigation"
 
 type CoursePageProps = {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function CoursePage({params}: CoursePageProps) {
+  const { id: courseId } = use(params)
   type Lesson = {
     id: number
     title: string,
@@ -53,7 +54,7 @@ export default function CoursePage({params}: CoursePageProps) {
 
     async function getCoursDetails(): Promise<void> {
         try {
-          const response = await fetch(`/api/student/details/cours?id=${params.id}`, {
+          const response = await fetch(`/api/student/details/cours?id=${courseId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -145,7 +146,7 @@ export default function CoursePage({params}: CoursePageProps) {
                                         )}
                                         <span className={lesson.completed ? "text-slate-400" : ""}>{lesson.title}</span>
                                       </div>
-                                      <Link href={`/student/courses/${params.id}/lesson/${lesson.id}`} className="cursor-pointer">
+                                      <Link href={`/student/courses/${courseId}/lesson/${lesson.id}`} className="cursor-pointer">
                                         <Button
                                           variant="ghost"
                                           size="sm"
@@ -261,22 +262,3 @@ function VideoLesson({ title, duration }: { title: string; duration: string }) {
   )
 }
 
-function LineChart(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 3v18h18" />
-      <path d="m19 9-5 5-4-4-3 3" />
-    </svg>
-  )
-}

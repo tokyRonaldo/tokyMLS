@@ -69,8 +69,12 @@ export default function InstructorSchedule() {
 
   const [loading, setLoading] = useState(false);
 
-  const [token, setToken] = useState(null);
-  const [student, setStudent] = useState(null);
+  type Student = {
+    id : number
+  }
+
+  const [token, setToken] = useState<string | null>(null);
+  const [student, setStudent] = useState<Student | null>(null);
 
   const monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -234,7 +238,7 @@ export default function InstructorSchedule() {
                           const isCurrentMonthDay = isCurrentMonth(date);
                           const isTodayDate = isToday(date);
 
-                          const dayConferences = listSchedule?.filter((conf) => isSameDay(new Date(conf.dateDebut), date))
+                          const dayConferences = listSchedule?.filter((conf) => isSameDay(new Date(conf.dateDebut), date)) ?? []
 
                           return (
                             <div

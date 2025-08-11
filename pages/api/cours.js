@@ -82,11 +82,11 @@ apiRoute.post(async (req, res) => {
         sousTitre: coursSubtitle || "",
         image: coursImage,
         video: coursVideo,
-        category: {
+        /*category: {
           connect: {
             id: 1,
           },
-        },
+        },*/
         theCategories: coursCategory,
         user: {
           connect: {

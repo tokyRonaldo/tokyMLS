@@ -112,12 +112,18 @@ export default function RegisterPage() {
       }
 
 
-    } catch (err : unknown) {
-      setLoading(false)
-      setErrorLogin(true)
-      setErrorMsg(err.message || 'Une erreur est survenue')
+    } catch (error : unknown) {
 
-      console.error(err)
+      if (error instanceof Error) {
+        setLoading(false)
+        setErrorLogin(true)
+        setErrorMsg(error.message || 'Une erreur est survenue')
+  
+        console.error(error)
+
+      } else {
+        console.error('Erreur inconnue :', error);
+      }
     } 
   }
 

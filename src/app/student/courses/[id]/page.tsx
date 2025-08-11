@@ -1,18 +1,13 @@
 "use client"
 import Link from "next/link"
+import Image from 'next/image';
 import {
-  ArrowLeft,
-  BookOpen,
   CheckCircle,
   Clock,
   Download,
   FileText,
   GraduationCap,
-  LayoutDashboard,
-  PlayCircle,
   Users,
-  Menu,
-  Bell,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -20,7 +15,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useEffect, useState ,use} from "react"
-import { useParams } from "next/navigation"
 
 type CoursePageProps = {
   params: Promise<{
@@ -49,31 +43,40 @@ export default function CoursePage({params}: CoursePageProps) {
   }
 
   const [coursDetail,setCoursDetail] = useState<Cours | null>(null);
-  const [loading, setLoading] = useState(false)
+  const loading = false;
 
 
-    async function getCoursDetails(): Promise<void> {
-        try {
-          const response = await fetch(`/api/student/details/cours?id=${courseId}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-      
-          if (!response.ok) {
-            console.error('Erreur lors de la récupération du cours');
-            return;
+      useEffect(()=>{
+        async function getCoursDetails(): Promise<void> {
+          try {
+            const response = await fetch(`/api/student/details/cours?id=${courseId}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+        
+            if (!response.ok) {
+              console.error('Erreur lors de la récupération du cours');
+              return;
+            }
+        
+            // Typage de la réponse attendue (exemple)
+            const data: Cours = await response.json();
+            setCoursDetail(data);
+          } catch (error: unknown) {
+            if (error instanceof Error) {
+              console.error('Erreur fetch :', error.message);
+            }else {
+              console.error('Erreur inconnue :', error);
+            }
+    
           }
-      
-          // Typage de la réponse attendue (exemple)
-          const data: any = await response.json();
-          setCoursDetail(data);
-        } catch (error: any) {
-          console.error('Erreur fetch :', error.message);
         }
-      }
-      useEffect(()=>{getCoursDetails()},[])
+  
+        getCoursDetails()
+      
+      },[courseId])
     return (
       
 
@@ -90,10 +93,14 @@ export default function CoursePage({params}: CoursePageProps) {
               <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2">
                   <Card className="overflow-hidden border-none shadow-sm bg-white">
-                    <img
-                      src={'/uploads/'+coursDetail?.image}
+
+                    <Image
+                      src={`/uploads/${coursDetail?.image}`}
                       alt="Course Banner"
+                      width={800} // Largeur en pixels
+                      height={300} // Hauteur en pixels
                       className="object-cover w-full h-[300px]"
+                      priority // Si l'image est above-the-fold
                     />
                     <CardHeader>
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -251,14 +258,4 @@ export default function CoursePage({params}: CoursePageProps) {
   )
 }
 
-function VideoLesson({ title, duration }: { title: string; duration: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <PlayCircle className="h-4 w-4 text-blue-500" />
-      <div className="flex flex-col">
-        <span className="text-xs text-slate-500">{duration}</span>
-      </div>
-    </div>
-  )
-}
 

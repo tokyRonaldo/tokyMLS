@@ -63,11 +63,17 @@ export default function Login() {
         
         
         }catch(error){
-            console.error(error)
-            setLoading(false)
-            setErrorLogin(true)
-            setErrorMsg(error.message || 'Une erreur est survenue')
-            toast.error(err.message || 'Une erreur est survenue');
+            if (error instanceof Error) {
+                console.error(error)
+                setLoading(false)
+                setErrorLogin(true)
+                setErrorMsg(error.message || 'Une erreur est survenue')
+                toast.error(err.message || 'Une erreur est survenue');
+            
+              } else {
+                console.error('Erreur inconnue :', error);
+              }
+        
         }
     }
 

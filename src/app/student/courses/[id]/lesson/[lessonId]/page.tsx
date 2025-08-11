@@ -39,11 +39,8 @@ export default function LessonPage({ params }: LessonPageProps) {
   const [isCompleted, setIsCompleted] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [comment, setComment] = useState("")
-  const [isNotesOpen, setIsNotesOpen] = useState(false)
-  const [notes, setNotes] = useState("")
-  const [loading, setLoading] = useState(false)
 
-  type Lesson = {
+  type LessonDetail = {
     id: number
     title: string
     videoUrl: string
@@ -51,44 +48,71 @@ export default function LessonPage({ params }: LessonPageProps) {
     document: string
   }
 
-  const [lessonDetail,setLessonDetail] = useState<Lesson | null>(null);
-  const [listLesson,setListLesson] = useState<Lesson[] | null>(null);
-
-
-  async function getLessonDetails(): Promise<void> {
-    try {
-      const response = await fetch(`/api/student/details/lesson?id=${lessonId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  interface UserLesson {
+    userId: number;
+    isFinished: boolean;
+    // Ajoutez d'autres propriétés selon votre API
+  }
   
-      if (!response.ok) {
-        console.error('Erreur lors de la récupération du cours');
-        return;
-      }
-  
-      // Typage de la réponse attendue (exemple)
-      const data: any = await response.json();
-      if(data.lesson.userLessons && data.lesson.userLessons.length > 0 ){
-        const userLesson = (data.lesson.userLessons as any[])?.find((ul) => ul.userId === 1);
-        if (userLesson && userLesson.isFinished) {
-          // Tu peux accéder à userLesson.isFinished, etc.
-          setIsCompleted(true)
-        }
-      }
-      setLessonDetail(data.lesson);
-      setListLesson(data.listLesson);
-    } catch (error: any) {
-      console.error('Erreur fetch :', error.message);
+  interface LessonWithUserData extends LessonDetail {
+    userLessons: UserLesson[];
+  }
+  interface ApiResponse {
+    lesson: LessonWithUserData;
+    listLesson: LessonDetail[];
+    // Ajoutez d'autres propriétés de la réponse
+  }
+
+  interface CompletionApiResponse{
+    response : {
+      isFinished : boolean
     }
   }
+
+  const [lessonDetail,setLessonDetail] = useState<LessonDetail | null>(null);
+  const [listLesson,setListLesson] = useState<LessonDetail[] | null>(null);
+
+
   useEffect(()=>{
      //courseId = params.id
      //lessonId = params.lessonId
+     async function getLessonDetails(): Promise<void> {
+      try {
+        const response = await fetch(`/api/student/details/lesson?id=${lessonId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+    
+        if (!response.ok) {
+          console.error('Erreur lors de la récupération du cours');
+          return;
+        }
+    
+        // Typage de la réponse attendue (exemple)
+        const data: ApiResponse = await response.json();
+        if(data.lesson.userLessons && data.lesson.userLessons.length > 0 ){
+          const userLesson = data.lesson.userLessons.find((ul) => ul.userId === 1);
+          if (userLesson && userLesson.isFinished) {
+            // Tu peux accéder à userLesson.isFinished, etc.
+            setIsCompleted(true)
+          }
+        }
+        setLessonDetail(data.lesson);
+        setListLesson(data.listLesson);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Erreur fetch :', error.message);
+        }else {
+          console.error('Erreur inconnue :', error);
+        }
+      }
+    }
+
     getLessonDetails()
-  },[])
+  
+  },[lessonId])
   type Navigation = {
     previous: { id: number; title: string } | null;
     next: { id: number; title: string } | null;
@@ -165,11 +189,16 @@ export default function LessonPage({ params }: LessonPageProps) {
       }
   
       // Typage de la réponse attendue (exemple)
-      const data: any = await response.json();
+      const data: CompletionApiResponse = await response.json();
       setIsCompleted(data.response.isFinished);
 
-    } catch (error: any) {
-      console.error('Erreur fetch :', error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+
+        console.error('Erreur fetch :', error.message);
+      }else {
+        console.error('Erreur inconnue :', error);
+      }
     }
 
   }
@@ -190,11 +219,6 @@ export default function LessonPage({ params }: LessonPageProps) {
   
 
         <>
-                    {loading && (
-              <div className="loading flex items-center justify-center inset-0" >
-                  <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-              </div>
-            )}
 
           <div className="p-6">
             <div className="flex flex-col gap-6 max-w-6xl mx-auto">

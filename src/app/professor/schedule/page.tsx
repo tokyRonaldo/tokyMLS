@@ -14,7 +14,7 @@ import {
   Filter,
   ArrowUpDown,
 } from "lucide-react"
-import { format, subDays, startOfWeek, isSameDay } from "date-fns"
+import { format, subDays, isSameDay } from "date-fns"
 import { fr } from "date-fns/locale"
 
 import { Button } from "@/components/ui/button"
@@ -50,16 +50,43 @@ export default function InstructorSchedule() {
   // Current date for the calendar
   const today = new Date()
 
+
+
+  interface ListCours {
+    id : string,
+    nom : string  
+    //[key: string]: unknown; // ✅ permet d'ajouter d'autres champs inconnus  
+  }
+
+  type VisioSession = {
+    id: number;
+    coursId: number;
+    dateDebut : Date;
+    dateFin : Date;
+    status : string;
+    lienVisio: string;
+    titre: string
+
+    // Ajoutez d'autres propriétés selon votre modèle Prisma
+    cours: {
+      id: number;
+      nom: string;
+      description : string;
+      // Autres propriétés du cours
+    };
+  }
+  
+
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [titreSchedule, setTitreSchedule] = useState<string | null>(null);
   const [coursSchedule, setCoursSchedule] = useState<string | null>(null);
   const [dateSchedule, setDateSchedule] = useState<string | null>(null);
   const [heureDebutSchedule, setHeureDebutSchedule] = useState<string | null>(null);
   const [heureFinSchedule, setHeureFinSchedule] = useState<string | null>(null);
-  const [lienSchedule, setLienSchedule] = useState<string | null>(null);
   const [descriptionSchedule, setDescriptionSchedule] = useState<string | null>(null);
-  const [listSchedule, setListSchedule] = useState<any[] | null>(null);
-  const [listCours, setListCours] = useState<any[] | null>(null);
+  const [listSchedule, setListSchedule] = useState<VisioSession[] | null>(null);
+  const [listCours, setListCours] = useState<ListCours[] | null>(null);
   const [openNewVisio, setOpenNewVisio] = useState(false);
   const [openVisioRapide, setOpenVisioRapide] = useState(false);
   const [openDropMenuId, setOpenDropMenuId] = useState<number | null>(null);
@@ -80,7 +107,7 @@ export default function InstructorSchedule() {
 
   const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-  const getDaysInMonth = (date : any) => {
+  const getDaysInMonth = (date: Date): Date[]=> {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -98,16 +125,16 @@ export default function InstructorSchedule() {
     return days;
   };
 
-  const isCurrentMonth = (date : any) => {
+  const isCurrentMonth = (date: Date) => {
     return date.getMonth() === currentDate.getMonth();
   };
 
-  const isToday = (date : any) => {
+  const isToday = (date : Date) => {
     const today = new Date();
     return date.toDateString() === today.toDateString();
   };
 
-  const navigateMonth = (direction : any) => {
+  const navigateMonth = (direction : number) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + direction);
     setCurrentDate(newDate);
@@ -128,7 +155,7 @@ export default function InstructorSchedule() {
       'dateSchedule' : date ? format(new Date(date),'Y-MM-dd') : dateSchedule ,   
       'heureDebutSchedule' : heureDebutSchedule,      
       'heureFinSchedule' : heureFinSchedule, 
-      'lienSchedule' : lienSchedule,
+      'lienSchedule' : null,
       'descriptionSchedule' : descriptionSchedule      
     }
     try {
@@ -145,50 +172,22 @@ export default function InstructorSchedule() {
         return;
       }
   
-      // Typage de la réponse attendue (exemple)
-      const data: any = await response.json();
       setOpenNewVisio(false)
       setLoading(false)
 
-    } catch (error: any) {
-      console.error('Erreur fetch :', error.message);
-      setLoading(false)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Erreur fetch :', error.message);
+        setLoading(false)
+
+      } else {
+        console.error('Erreur inconnue :', error);
+      }
     }
   }
 
-  const handleListeSchedule= async()=>{
-    const response= await fetch(`/api/professor/schedule?formateur_id=${formateur?.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      if(!response.ok){
-        console.error('error')
-        return;
-      }
-      let result = await response.json();
-      setListSchedule(result);
-  }
 
-  const handleListeCours= async()=>{
-
-      const response= await fetch(`/api/cours?formateur_id=${formateur?.id}`,{
-        method : 'GET',
-        headers :{
-          "Content-Type": "application/json",
-          //'Authorization' : 'Bearer ' + token
-        }
-      });
-      if(!response.ok){
-        console.log('erreur')
-        return;
-      }
-      let result = await response.json();
-      setListCours(result);
-  }
-
-  const handleDeleteVisio = async (e : React.MouseEvent<HTMLButtonElement>,id:any) =>{
+  const handleDeleteVisio = async ( e: React.MouseEvent<HTMLElement>,id: string | number) =>{
     e.preventDefault()
     setLoading(true)
 
@@ -208,12 +207,16 @@ export default function InstructorSchedule() {
       }
   
       // Typage de la réponse attendue (exemple)
-      const data: any = await response.json();
       setOpenDropMenuId(null)
       setLoading(false)
-    } catch (error: any) {
-      console.error('Erreur fetch :', error.message);
-      setLoading(false)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Erreur fetch :', error.message);
+        setLoading(false)
+
+      } else {
+        console.error('Erreur inconnue :', error);
+      }
     }
   }
 
@@ -234,9 +237,40 @@ export default function InstructorSchedule() {
 
   useEffect(()=>{
     if (formateur && token) {
-
+      const handleListeSchedule= async()=>{
+        const response= await fetch(`/api/professor/schedule?formateur_id=${formateur?.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          if(!response.ok){
+            console.error('error')
+            return;
+          }
+          const result = await response.json();
+          setListSchedule(result);
+      }
+    
+      const handleListeCours= async()=>{
+    
+          const response= await fetch(`/api/cours?formateur_id=${formateur?.id}`,{
+            method : 'GET',
+            headers :{
+              "Content-Type": "application/json",
+              //'Authorization' : 'Bearer ' + token
+            }
+          });
+          if(!response.ok){
+            console.log('erreur')
+            return;
+          }
+          const result = await response.json();
+          setListCours(result);
+      }
       handleListeSchedule();
       handleListeCours();
+    
     }
   },[formateur, token])
 
@@ -256,7 +290,7 @@ export default function InstructorSchedule() {
                   <h1 className="text-3xl font-bold tracking-tight">Calendrier des visioconférences</h1>
                   <p className="text-slate-500">Gérez vos sessions de visioconférence pour vos cours</p>
                   <p className="text-slate-500">
-                    Cliquez sur "Créer une visioconférence" ou sur "+ Ajouter session" dans le calendrier pour
+                    Cliquez sur &quotCréer une visioconférence&quot ou sur &quot+ Ajouter session&quot dans le calendrier pour
                     programmer une nouvelle session
                   </p>
                 </div>
@@ -288,7 +322,7 @@ export default function InstructorSchedule() {
                           <SelectContent>
 
                             <SelectItem  value="test">test</SelectItem>
-                            {listCours?.map((cours,i)=>(
+                            {listCours?.map((cours)=>(
 
                             <SelectItem key={cours.id} value={cours.id}>{cours.nom}</SelectItem>
                             ))}
@@ -364,7 +398,7 @@ export default function InstructorSchedule() {
                         </div>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm" className="border-slate-200">
-                            Aujourd'hui
+                            Aujourd&apos;hui
                           </Button>
                         </div> 
                       </div>
@@ -456,7 +490,7 @@ export default function InstructorSchedule() {
                                           <SelectValue placeholder="Sélectionner un cours" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {listCours?.map((cours,i)=>(
+                                            {listCours?.map((cours)=>(
 
                                             <SelectItem key={cours.id} value={cours.id}>{cours.nom}</SelectItem>
                                             ))}                                        
@@ -593,7 +627,7 @@ export default function InstructorSchedule() {
                                         </a>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-red-600" onClick={(e: React.MouseEvent<any>) => {handleDeleteVisio(e,conference.id)}}>Supprimer</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-red-600" onClick={(e: React.MouseEvent<HTMLElement>) => {handleDeleteVisio(e,conference.id)}}>Supprimer</DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </TableCell>
@@ -654,7 +688,7 @@ export default function InstructorSchedule() {
                             target="_blank"
                             className="text-sm text-blue-600 hover:underline truncate"
                           >
-                            {conference.lienVision}
+                            {conference.lienVisio}
                           </Link>
                         </div>
                       </CardContent>

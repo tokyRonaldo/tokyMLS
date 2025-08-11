@@ -2,16 +2,7 @@
 
 import Link from "next/link"
 import {
-  BookOpen,
-  GraduationCap,
-  LayoutDashboard,
-  Users,
-  FileText,
-  Settings,
-  Bell,
-  Menu,
   CalendarIcon,
-  Plus,
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
@@ -22,35 +13,22 @@ import {
   Filter,
   ArrowUpDown,
 } from "lucide-react"
-import { format, addDays, subDays, startOfWeek, isSameDay } from "date-fns"
+import { format, subDays, isSameDay } from "date-fns"
 import { fr } from "date-fns/locale"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import GlobalLoader from "../../../components/GlobalLoader" // 👈 à adapter selon ton chemin
 import { useEffect, useState } from "react"
 import '../../loading.css'
 
@@ -58,20 +36,39 @@ import '../../loading.css'
 export default function InstructorSchedule() {
   // Current date for the calendar
   const today = new Date()
-  const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 }) // Week starts on Monday
+  
+  
+  type Student = {
+    id : number;
+    [key: string]: unknown;
+  }
+  
+  
+  type VisioSession = {
+    id: number;
+    coursId: number;
+    dateDebut : Date;
+    dateFin : Date;
+    status : string;
+    lienVisio: string;
+    titre: string
+
+    // Ajoutez d'autres propriétés selon votre modèle Prisma
+    cours: {
+      id: number;
+      nom: string;
+      description : string;
+      // Autres propriétés du cours
+    };
+  }
+  
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [sessions, setSessions] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [openVisioRapide, setOpenVisioRapide] = useState(false);
   const [openDropMenuId, setOpenDropMenuId] = useState<number | null>(null);
-  const [listSchedule, setListSchedule] = useState<any[] | null>(null);
+  const [listSchedule, setListSchedule] = useState<VisioSession[] | null>(null);
 
   const [loading, setLoading] = useState(false);
 
-  type Student = {
-    id : number
-  }
 
   const [token, setToken] = useState<string | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
@@ -83,11 +80,10 @@ export default function InstructorSchedule() {
 
   const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-  const getDaysInMonth = (date : any) => {
+  const getDaysInMonth = (date : Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
     
@@ -102,25 +98,17 @@ export default function InstructorSchedule() {
     return days;
   };
 
-  const formatDate = (date : any) => {
-    return date.toISOString().split('T')[0];
-  };
-  /*
-  const getSessionsForDate = (date :any) => {
-    const dateStr = formatDate(date);
-    return sessions.filter(session => session.date === dateStr);
-  };*/
 
-  const isCurrentMonth = (date : any) => {
+  const isCurrentMonth = (date : Date) => {
     return date.getMonth() === currentDate.getMonth();
   };
 
-  const isToday = (date : any) => {
+  const isToday = (date : Date) => {
     const today = new Date();
     return date.toDateString() === today.toDateString();
   };
 
-  const navigateMonth = (direction : any) => {
+  const navigateMonth = (direction : number) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + direction);
     setCurrentDate(newDate);
@@ -130,23 +118,6 @@ export default function InstructorSchedule() {
 
 
 
-
-  const handleListeSchedule= async()=>{
-    setLoading(true)
-    const response= await fetch(`/api/student/schedule?student_id=${student?.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      setLoading(false)
-      if(!response.ok){
-        console.error('error')
-        return;
-      }
-      let result = await response.json();
-      setListSchedule(result.visioSessions);
-  }
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -163,6 +134,24 @@ export default function InstructorSchedule() {
 
   useEffect(()=>{
     if (student && token) {
+      const handleListeSchedule= async()=>{
+        setLoading(true)
+        const response= await fetch(`/api/student/schedule?student_id=${student?.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          setLoading(false)
+          if(!response.ok){
+            console.error('error')
+            return;
+          }
+          const result = await response.json();
+          setListSchedule(result.visioSessions);
+      }
+    
+    
     handleListeSchedule();
     }
   },[student,token])
@@ -217,7 +206,7 @@ export default function InstructorSchedule() {
                         </div>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm" className="border-slate-200">
-                            Aujourd'hui
+                            Aujourd&aposhui
                           </Button>
                         </div> 
                       </div>

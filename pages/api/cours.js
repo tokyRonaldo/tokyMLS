@@ -113,11 +113,11 @@ apiRoute.post(async (req, res) => {
           level: coursLevel || "",
           content: coursContent || "",
           //categoryId: 1,
-          category: {
+          /*category: {
             connect: {
               id: 1
             }
-          },
+          },*/
           theCategories : coursCategory,
           sousTitre: coursSubtitle || "",
           image: coursImage,

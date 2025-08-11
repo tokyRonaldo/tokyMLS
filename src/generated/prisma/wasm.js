@@ -142,7 +142,6 @@ exports.Prisma.CoursScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
-  categoryId: 'categoryId',
   theCategories: 'theCategories'
 };
 

@@ -68,6 +68,8 @@ apiRoute.post(async (req, res) => {
   const coursImage = coursImageFile ? coursImageFile.filename : "";
   const coursVideo = coursVideoFile ? coursVideoFile.filename : "";
   console.log('tesssss')
+  console.log(req.files)
+
   console.log(coursImage)
   console.log(coursVideo)
 

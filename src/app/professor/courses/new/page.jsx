@@ -526,7 +526,7 @@ export default function NewCourse() {
                               initializeVariable()
                             }}>
                               <Plus className="h-4 w-4 mr-2" />
-                              Add Module
+                              Ajouter lesson
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-md">
                             <DialogHeader>
@@ -691,10 +691,11 @@ export default function NewCourse() {
                                 </div>
                               </div>
                             ))}
-                            <Button variant="outline" className="w-full border-dashed border-slate-200">
-                              <Plus className="h-4 w-4 mr-2" />
-                              Add Lesson
-                            </Button>
+                            {
+                              listLesson.length<1 &&
+                              <p className="text-center text-md text-slate-500">Aucune lesson</p>
+                            }
+                            
                           </div>
                         </div>
                       </CardContent>

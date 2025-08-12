@@ -170,9 +170,9 @@ export default function Login() {
             </CardContent>
             <CardFooter className="flex justify-center">
             <p className="text-sm text-slate-500">
-              Vous avez déjà un compte?{" "}
+              Vous n'avez pas encore de compte?{" "}
               <Link href="/auth/register" className="text-emerald-600 hover:underline">
-                Se connecter
+                S'inscrire
               </Link>
             </p>
           </CardFooter>

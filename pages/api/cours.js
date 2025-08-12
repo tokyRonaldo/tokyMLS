@@ -67,6 +67,9 @@ apiRoute.post(async (req, res) => {
 
   const coursImage = coursImageFile ? coursImageFile.filename : "";
   const coursVideo = coursVideoFile ? coursVideoFile.filename : "";
+  console.log('tesssss')
+  console.log(coursImage)
+  console.log(coursVideo)
 
   //editer un cours
   if(coursId){

@@ -339,7 +339,7 @@ export default function NewCourse() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="title">Course Title *</Label>
+                            <Label htmlFor="title">Course Title <span className="text-red-500">*</span></Label>
                             <Input
                               id="cours_title"
                               placeholder="Enter course title"
@@ -370,7 +370,7 @@ export default function NewCourse() {
                           </div>
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                              <Label htmlFor="category">Category *</Label>
+                              <Label htmlFor="category">Category <span className="text-red-500">*</span></Label>
                               <Select value={coursCategory}
                               onValueChange={(value) => setCoursCategory(value)}
                               >
@@ -515,7 +515,7 @@ export default function NewCourse() {
                     <Card className="border-none shadow-sm">
                       <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                          <CardTitle>Course Lessons *</CardTitle>
+                          <CardTitle>Course Lessons <span className="text-red-500">*</span></CardTitle>
                           <CardDescription>Organize your course content into modules and lessons</CardDescription>
                         </div>
                         <Dialog open={showModal} onOpenChange={setShowModal}>

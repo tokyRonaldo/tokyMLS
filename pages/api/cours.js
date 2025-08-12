@@ -6,7 +6,6 @@ import getRawBody from 'raw-body';
 //import prisma from '@/lib/prisma';    
 //ca a causer bcp de bug // ajouter npx prisma generate
 import { PrismaClient } from '../../src/generated/prisma';
-import { connect } from "http2";
 const prisma = new PrismaClient();
 
 

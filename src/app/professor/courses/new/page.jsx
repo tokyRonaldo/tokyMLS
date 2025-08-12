@@ -49,7 +49,7 @@ import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation"
 import { usePathname } from "next/navigation"
 
-import { useEffect,useState } from "react"
+import { useEffect,useRef,useState } from "react"
 
 
 
@@ -76,6 +76,8 @@ export default function NewCourse() {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState();
   const [formateur, setFormateur] = useState();
+  const fileInputRef = useRef(null)
+  const videoInputRef = useRef(null)
   const router = useRouter()
   const pathname = usePathname();
 
@@ -123,6 +125,13 @@ export default function NewCourse() {
 
   }
 
+  const resetFileCours = () => {
+    fileInputRef.current.value = "" // vide le champ
+    setCoursImagePreview(null) // vide l'aperçu
+    setCoursImage('')
+  }
+
+
   const handleVideoChange = (e)=>{
     e.preventDefault();
     const file = e.target.files?.[0];
@@ -140,6 +149,11 @@ export default function NewCourse() {
       setCoursVideoPreview(URL.createObjectURL(file));
       console.log('Fichier sélectionné :', file.name);
     }
+  }
+  const resetVideoCours = () => {
+    videoInputRef.current.value = "" // vide le champ
+    setCoursVideoPreview(null) // vide l'aperçu
+    setCoursVideo('')
   }
 
   const handleAddLesson= async (e)=>{
@@ -396,8 +410,19 @@ export default function NewCourse() {
                     <div className="space-y-6">
                       <Card className="border-none shadow-sm">
                         <CardHeader>
-                          <CardTitle>Course Image</CardTitle>
-                          <CardDescription>Upload a cover image for your course</CardDescription>
+                          <div className="flex justify-between">
+                            <div className="gap-2">
+                            <CardTitle className="mb-1">Course Image</CardTitle>
+                            <CardDescription>Upload a cover image for your course</CardDescription>
+                            </div>
+                            <div>
+                              {
+                                coursImagePreview && 
+                                <Trash2 onClick={resetFileCours} 
+                                className="h-8 w-8 cursor-pointer hover:opacity-50" color="red" />
+                              }
+                            </div>
+                          </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
@@ -407,7 +432,7 @@ export default function NewCourse() {
                               className="mx-auto mb-4 rounded-md"
                             />
                             <div className="space-y-2">
-                            <Input id="picture" type="file" 
+                            <Input id="picture" type="file" ref={fileInputRef}
                                     onChange={handleFileChangeCours}
                                     accept=".pdf,.jpg,.png"
                                   />
@@ -419,8 +444,20 @@ export default function NewCourse() {
 
                       <Card className="border-none shadow-sm">
                         <CardHeader>
-                          <CardTitle>Promotional Video</CardTitle>
-                          <CardDescription>Add a short video to promote your course</CardDescription>
+                          <div className="flex justify-between">
+                            <div>
+                              <CardTitle className="mb-1">Promotional Video</CardTitle>
+                              <CardDescription>Add a short video to promote your course</CardDescription>
+                            </div>
+                            <div>
+                            {
+                                coursVideoPreview && 
+                                <Trash2 onClick={resetVideoCours} 
+                                className="h-8 w-8 cursor-pointer hover:opacity-50" color="red" />
+                              }
+
+                            </div>
+                          </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
@@ -436,7 +473,7 @@ export default function NewCourse() {
                                 <Upload className="h-10 w-10 text-slate-400" />
                               )}
                             </div>
-                            <Input id="video" type="file" 
+                            <Input id="video" type="file" ref={videoInputRef}
                                     onChange={handleVideoChangeCours}
                                     accept=".mkv,.mp4"
                             />                            

@@ -6,6 +6,7 @@ import getRawBody from 'raw-body';
 //import prisma from '@/lib/prisma';    
 //ca a causer bcp de bug // ajouter npx prisma generate
 import { PrismaClient } from '../../src/generated/prisma';
+import { connect } from "http2";
 const prisma = new PrismaClient();
 
 
@@ -60,9 +61,11 @@ apiRoute.post(async (req, res) => {
       coursCategory,
       coursSubtitle,
       userId,
+      coursImage,
+      coursVideo
     } = req.body;
   // Récupération sécurisée des fichiers
-  const coursImageFile = req.files.find(f => f.fieldname === "coursImage");
+  /*const coursImageFile = req.files.find(f => f.fieldname === "coursImage");
   const coursVideoFile = req.files.find(f => f.fieldname === "coursVideo");
 
   const coursImage = coursImageFile ? coursImageFile.filename : "";
@@ -72,7 +75,7 @@ apiRoute.post(async (req, res) => {
 
   console.log(coursImage)
   console.log(coursVideo)
-
+*/
   //editer un cours
   if(coursId){
     var cours = await prisma.cours.update({
@@ -151,14 +154,27 @@ apiRoute.post(async (req, res) => {
     
       if (!lesson?.title) continue; // Ignore les entrées invalides
     
-      const documentFile = req.files.find(f => f.fieldname === `lessonDocument_${index}`);
-      const videoFile = req.files.find(f => f.fieldname === `lessonVideo_${index}`);
+      //const documentFile = req.files.find(f => f.fieldname === `lessonDocument_${index}`);
+      //const videoFile = req.files.find(f => f.fieldname === `lessonVideo_${index}`);
     
       lessons.push({
         title: lesson.title,
         contenu: lesson.contenu,
-        documentLesson: documentFile?.filename ?? null,
-        videoLesson: videoFile?.filename ?? null
+        document: lesson.file ?? null,
+        videoUrl: lesson.video ?? null,
+        coursId: cours.id,
+      });
+
+    }
+    for (const lesson of lessons) {
+      await prisma.lesson.create({
+        data: {
+          title: lesson.title,
+          contenu: lesson.contenu,
+          document: lesson.document,
+          videoUrl: lesson.videoUrl,
+          cours: { connect: { id: cours.id } } // liaison via relation Prisma
+        }
       });
     }
     

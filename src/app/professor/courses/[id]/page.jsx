@@ -49,7 +49,7 @@ import { useRouter } from "next/navigation"
 import { usePathname } from "next/navigation"
 import toast from 'react-hot-toast';
 
-import { useEffect,useState } from "react"
+import { useEffect,useRef,useState } from "react"
 
 
 
@@ -74,6 +74,8 @@ export default function NewCourse() {
   const [coursVideoPreview, setCoursVideoPreview] = useState(null);
   const [coursSubtitle, setCoursSubtitle] = useState('');
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null)
+  const videoInputRef = useRef(null)
 
   const [token, setToken] = useState();
   const [formateur, setFormateur] = useState();
@@ -144,12 +146,12 @@ const handleFileChange = (e)=>{
         setCoursSubtitle(resp.sousTitre);
         setCoursCategory(resp.theCategories)
         if(resp.image && resp.image!= ''){
-          setCoursImagePreview(`/uploads/${resp.image}`);
+          setCoursImagePreview(`${resp.image}`);
           setCoursImage(resp.image);
         }
         if(resp.video && resp.video!= ''){
-          setCoursVideoPreview(`/uploads/${resp.video}`);
-          setCoursVideo(resp.image);
+          setCoursVideoPreview(`${resp.video}`);
+          setCoursVideo(resp.video);
         }
         const arrayLesson = resp.lessons.map(lesson => ({
           titleLesson: lesson.title,
@@ -157,6 +159,7 @@ const handleFileChange = (e)=>{
           documentLesson: lesson.document,
           videoLesson: lesson.videoUrl
         }));
+        console.log(arrayLesson);
         setListLesson(arrayLesson)
 
 
@@ -178,6 +181,13 @@ const handleFileChange = (e)=>{
 
   }
 
+  const resetFileCours = () => {
+    fileInputRef.current.value = "" // vide le champ
+    setCoursImagePreview(null) // vide l'aperçu
+    setCoursImage('')
+  }
+
+
   const handleVideoChange = (e)=>{
     e.preventDefault();
     const file = e.target.files?.[0];
@@ -186,6 +196,13 @@ const handleFileChange = (e)=>{
       console.log('Fichier sélectionné :', file.name);
     }
   }
+
+  const resetVideoCours = () => {
+    videoInputRef.current.value = "" // vide le champ
+    setCoursVideoPreview(null) // vide l'aperçu
+    setCoursVideo('')
+  }
+
 
   const handleVideoChangeCours = (e)=>{
     e.preventDefault();
@@ -234,12 +251,66 @@ const handleFileChange = (e)=>{
     setVideoLesson('');
   }
   
+  const uploadToCloudinary = async (file) => {
+    console.log('essssssssssssaooooooo')
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "ml_default"); // nom du preset à créer dans Cloudinary
+  
+    const res = await fetch(`https://api.cloudinary.com/v1_1/dmcdb4zcy/upload`, {
+      method: "POST",
+      body: data,
+    });
+  
+    const json = await res.json();
+    console.log('respooooooooonse');
+    console.log(json);
+    return json.secure_url; // URL publique
+  };
+  
 
   const handleSubmitCours = async () => {
+    if(coursTitle=="" || coursCategory=="" ||listLesson.length== 0){
+      toast.error("Veuiller remplir tout les champ obligatoire marqué par des '*' et le lesson aussi");
+      return;
+    }
     setLoading(true);
     try {
       const formData = new FormData();
   
+      
+      // Fichiers (si ce sont bien des File)
+      if (coursImage) {
+        const imageUrl =await uploadToCloudinary(coursImage);
+        formData.append("coursImage", imageUrl);
+      }
+      
+      if (coursVideo) {
+        const videoUrl =await uploadToCloudinary(coursVideo);
+        formData.append("coursVideo", videoUrl);
+      }
+
+
+    // Parcours des leçons (avec await dans boucle classique)
+    for (let index = 0; index < listLesson.length; index++) {
+        const lesson = listLesson[index];
+        console.log(lesson.titleLesson)
+        formData.append(`listLesson[${index}][title]`, lesson.titleLesson);
+        formData.append(`listLesson[${index}][contenu]`, lesson.descriptionLesson);
+        if (lesson.documentLesson ) {
+          let fileLessonUrl =await uploadToCloudinary(lesson.documentLesson);
+          //formData.append(`lessonDocument_${index}`, fileLessonUrl);
+          formData.append(`listLesson[${index}][file]`, fileLessonUrl);
+
+
+        }
+        if (lesson.videoLesson) {
+          let fileVideoUrl =await uploadToCloudinary(lesson.videoLesson);
+          //formData.append(`lessonVideo_${index}`, fileVideoUrl);
+          formData.append(`listLesson[${index}][video]`, fileVideoUrl);
+
+        }
+      }
       // Champs simples
       formData.append("coursTitle", coursTitle);
       formData.append("coursDescription", coursDescription);
@@ -248,30 +319,6 @@ const handleFileChange = (e)=>{
       formData.append("coursCategory", coursCategory);
       formData.append("coursSubtitle", coursSubtitle);
       formData.append("userId", formateur.id);
-  
-      // Fichiers (si ce sont bien des File)
-      if (coursImage instanceof File) {
-        formData.append("coursImage", coursImage);
-      }
-  
-      if (coursVideo instanceof File) {
-        formData.append("coursVideo", coursVideo);
-      }
-  
-      // listLesson est un tableau d'objets
-      listLesson.forEach((lesson, index) => {
-        formData.append(`listLesson[${index}][title]`, lesson.titleLesson);
-        formData.append(`listLesson[${index}][contenu]`, lesson.descriptionLesson);
-        if (lesson.documentLesson instanceof File) {
-          formData.append(`lessonDocument_${index}`, lesson.documentLesson);
-        }
-        if (lesson.videoLesson instanceof File) {
-          formData.append(`lessonVideo_${index}`, lesson.videoLesson);
-        }
-
-        //formData.append(`listLesson[${index}][document]`, lesson.documentLesson);
-        //formData.append(`listLesson[${index}][videoUrl]`, lesson.videoLesson);
-      })
       console.log(formData)
       /*if(listLesson.length > 0){
         formData.append("lesson", JSON.stringify(listLesson));
@@ -372,7 +419,7 @@ const handleFileChange = (e)=>{
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="title">Course Title</Label>
+                            <Label htmlFor="title">Course Title <span className="text-red-500">*</span></Label>
                             <Input
                               id="cours_title"
                               placeholder="Enter course title"
@@ -403,7 +450,7 @@ const handleFileChange = (e)=>{
                           </div>
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
-                              <Label htmlFor="category">Category</Label>
+                              <Label htmlFor="category">Category <span className="text-red-500">*</span></Label>
                               <Select value={coursCategory}
                               onValueChange={(value) => setCoursCategory(value)}
                               >
@@ -443,8 +490,19 @@ const handleFileChange = (e)=>{
                     <div className="space-y-6">
                       <Card className="border-none shadow-sm">
                         <CardHeader>
-                          <CardTitle>Course Image</CardTitle>
-                          <CardDescription>Upload a cover image for your course</CardDescription>
+                          <div className="flex justify-between">
+                            <div className="gap-2">
+                              <CardTitle className="mb-1">Course Image</CardTitle>
+                              <CardDescription>Upload a cover image for your course</CardDescription>
+                            </div>
+                            <div>
+                              {
+                                coursImagePreview && 
+                                <Trash2 onClick={resetFileCours} 
+                                className="h-8 w-8 cursor-pointer hover:opacity-50" color="red" />
+                              }
+                            </div>
+                          </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
@@ -454,7 +512,7 @@ const handleFileChange = (e)=>{
                               className="mx-auto mb-4 rounded-md"
                             />
                             <div className="space-y-2">
-                            <Input id="picture" type="file" 
+                            <Input id="picture" type="file" ref={fileInputRef}
                                     onChange={handleFileChangeCours}
                                     accept=".pdf,.jpg,.png"
                                   />
@@ -466,8 +524,20 @@ const handleFileChange = (e)=>{
 
                       <Card className="border-none shadow-sm">
                         <CardHeader>
-                          <CardTitle>Promotional Video</CardTitle>
-                          <CardDescription>Add a short video to promote your course</CardDescription>
+                         <div className="flex justify-between">
+                            <div>
+                              <CardTitle className="mb-1">Promotional Video</CardTitle>
+                              <CardDescription>Add a short video to promote your course</CardDescription>
+                            </div>
+                            <div>
+                            {
+                               (coursVideoPreview && coursVideoPreview!= '') && 
+                                <Trash2 onClick={resetVideoCours} 
+                                className="h-8 w-8 cursor-pointer hover:opacity-50" color="red" />
+                              }
+
+                            </div>
+                          </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
@@ -483,7 +553,7 @@ const handleFileChange = (e)=>{
                                 <Upload className="h-10 w-10 text-slate-400" />
                               )}
                             </div>
-                            <Input id="video" type="file" 
+                            <Input id="video" type="file" ref={videoInputRef}
                                     onChange={handleVideoChangeCours}
                                     accept=".mkv,.mp4"
                             />                            
@@ -525,7 +595,7 @@ const handleFileChange = (e)=>{
                     <Card className="border-none shadow-sm">
                       <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                          <CardTitle>Course lesson</CardTitle>
+                          <CardTitle>Course lesson <span className="text-red-500">*</span></CardTitle>
                           <CardDescription>Organize your course content into modules and lessons</CardDescription>
                         </div>
                         <Dialog open={showModal} onOpenChange={setShowModal}>
@@ -536,7 +606,7 @@ const handleFileChange = (e)=>{
                               initializeVariable()
                             }}>
                               <Plus className="h-4 w-4 mr-2" />
-                              Add Module
+                              Ajouter lesson
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-md">
                             <DialogHeader>
@@ -701,10 +771,10 @@ const handleFileChange = (e)=>{
                                 </div>
                               </div>
                             ))}
-                            <Button variant="outline" className="w-full border-dashed border-slate-200">
-                              <Plus className="h-4 w-4 mr-2" />
-                              Add Lesson
-                            </Button>
+                            {
+                              listLesson.length<1 &&
+                              <p className="text-center text-md text-slate-500">Aucune lesson</p>
+                            }
                           </div>
                         </div>
                       </CardContent>

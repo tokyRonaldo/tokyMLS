@@ -102,6 +102,23 @@ export default function NewCourse() {
 
 }, [])
 
+const uploadToCloudinary = async (file) => {
+  console.log('essssssssssssaooooooo')
+  const data = new FormData();
+  data.append("file", file);
+  data.append("upload_preset", "ml_default"); // nom du preset à créer dans Cloudinary
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/dmcdb4zcy/upload`, {
+    method: "POST",
+    body: data,
+  });
+
+  const json = await res.json();
+  console.log('respooooooooonse');
+  console.log(json);
+  return json.secure_url; // URL publique
+};
+
 
 
   const handleFileChange = (e)=>{
@@ -114,7 +131,7 @@ export default function NewCourse() {
 
   }
 
-  const handleFileChangeCours = (e)=>{
+  const handleFileChangeCours = async(e)=>{
     e.preventDefault();
     const file = e.target.files?.[0];
     if (file) {
@@ -204,6 +221,44 @@ export default function NewCourse() {
     try {
      
       const formData = new FormData();
+      
+      // Fichiers (si ce sont bien des File)
+      if (coursImage instanceof File) {
+        const imageUrl =await uploadToCloudinary(coursImage);
+        formData.append("coursImage", imageUrl);
+      }
+      
+      if (coursVideo instanceof File) {
+        const videoUrl =await uploadToCloudinary(coursVideo);
+        formData.append("coursVideo", videoUrl);
+      }
+
+
+    // Parcours des leçons (avec await dans boucle classique)
+    for (let index = 0; index < listLesson.length; index++) {
+        const lesson = listLesson[index];
+        console.log(lesson.titleLesson)
+        formData.append(`listLesson[${index}][title]`, lesson.titleLesson);
+        formData.append(`listLesson[${index}][contenu]`, lesson.descriptionLesson);
+        if (lesson.documentLesson instanceof File) {
+          let fileLessonUrl =await uploadToCloudinary(lesson.documentLesson);
+          //formData.append(`lessonDocument_${index}`, fileLessonUrl);
+          formData.append(`listLesson[${index}][file]`, fileLessonUrl);
+
+
+        }
+        if (lesson.videoLesson instanceof File) {
+          let fileVideoUrl =await uploadToCloudinary(lesson.videoLesson);
+          //formData.append(`lessonVideo_${index}`, fileVideoUrl);
+          formData.append(`listLesson[${index}][video]`, fileVideoUrl);
+
+        }
+        
+        //formData.append(`listLesson[${index}][document]`, lesson.documentLesson);
+        //formData.append(`listLesson[${index}][videoUrl]`, lesson.videoLesson);
+      }
+
+
       // Champs simples
       formData.append("coursTitle", coursTitle);
       formData.append("coursDescription", coursDescription);
@@ -212,36 +267,11 @@ export default function NewCourse() {
       formData.append("coursCategory", coursCategory);
       formData.append("coursSubtitle", coursSubtitle);
       formData.append("userId", formateur.id);
-  
-      // Fichiers (si ce sont bien des File)
-      if (coursImage instanceof File) {
-        formData.append("coursImage", coursImage);
-      }
-  
-      if (coursVideo instanceof File) {
-        formData.append("coursVideo", coursVideo);
-      }
-  
-      // listLesson est un tableau d'objets
-      listLesson.forEach((lesson, index) => {
-        console.log(lesson.titleLesson)
-        formData.append(`listLesson[${index}][title]`, lesson.titleLesson);
-        formData.append(`listLesson[${index}][contenu]`, lesson.descriptionLesson);
-        if (lesson.documentLesson instanceof File) {
-          formData.append(`lessonDocument_${index}`, lesson.documentLesson);
-        }
-        if (lesson.videoLesson instanceof File) {
-          formData.append(`lessonVideo_${index}`, lesson.videoLesson);
-        }
-
-        //formData.append(`listLesson[${index}][document]`, lesson.documentLesson);
-        //formData.append(`listLesson[${index}][videoUrl]`, lesson.videoLesson);
-      })
       console.log(formData)
       /*if(listLesson.length > 0){
         formData.append("lesson", JSON.stringify(listLesson));
       }*/
-  
+
       const response = await fetch("/api/cours", {
         method: "POST",
         body: formData, // pas de JSON ici

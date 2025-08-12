@@ -206,10 +206,10 @@ useEffect(() => {
                 <TabsContent value="grid" className="space-y-4">
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {listCours?.map((cours, i) => (
-                      <Card key={i} className="bg-white border-none shadow-sm overflow-hidden">
+                      <Card key={i} className="bg-white border-none shadow-sm overflow-hidden ">
                         <div className="relative">
                           <img
-                            src={cours.image ? `/uploads/${cours.image}` : `/placeholder.svg?height=160&width=320&text=Course ${i + 1}`}
+                            src={cours.image ? `${cours.image}` : `/placeholder.svg?height=160&width=320&text=Course ${i + 1}`}
                             alt={`Course ${i + 1}`}
                             className="object-cover w-full h-40"
                           />
@@ -234,8 +234,8 @@ useEffect(() => {
                             <span className="text-slate-500">{cours.description}</span>
                           </div>
                         </CardContent>
-                        <CardFooter className="flex gap-2">
-                            <Button onClick={(e)=>handleClick(e,`/professor/courses/${cours.id}`)} variant="outline" className="w-full border-slate-200">
+                        <CardFooter className="flex flex-col sm:flex-row gap-2">
+                            <Button onClick={(e)=>handleClick(e,`/professor/courses/${cours.id}`)} variant="outline" className="flex-1 border-slate-200">
                               <Edit className="h-4 w-4" />
                               Edit
                             </Button>

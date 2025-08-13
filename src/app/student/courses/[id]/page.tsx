@@ -94,13 +94,12 @@ export default function CoursePage({params}: CoursePageProps) {
                 <div className="lg:col-span-2">
                   <Card className="overflow-hidden border-none shadow-sm bg-white">
 
-                    <Image
+                    <img
                       src={`${coursDetail?.image}`}
                       alt="Course Banner"
                       width={800} // Largeur en pixels
                       height={300} // Hauteur en pixels
                       className="object-cover w-full h-[300px]"
-                      priority // Si l'image est above-the-fold
                     />
                     <CardHeader>
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

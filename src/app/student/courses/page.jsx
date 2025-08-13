@@ -155,7 +155,7 @@ export default function CoursesPage() {
                       <Card key={i} className="overflow-hidden border-none shadow-sm bg-white">
                          <Link href={"/student/courses/"+cours.id}>
                         <img
-                          src={'/uploads/'+cours.image}
+                          src={cours.image}
                           alt={`Course ${i + 1}`}
                           className="object-cover w-full h-40"
                         />

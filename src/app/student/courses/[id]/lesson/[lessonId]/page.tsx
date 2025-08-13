@@ -253,7 +253,7 @@ export default function LessonPage({ params }: LessonPageProps) {
                           <CardTitle className="text-2xl">{lessonDetail?.title}</CardTitle>
                             <Badge variant="secondary" className="bg-slate-100">
                               <a
-                                href={`/uploads/${lessonDetail?.document}`}
+                                href={`${lessonDetail?.document}`}
                                 download
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -342,7 +342,7 @@ export default function LessonPage({ params }: LessonPageProps) {
                   {lessonDetail?.videoUrl ? 
                   <Card className="border-none shadow-sm bg-white mb-6">
                     <CardContent className="p-6">
-                      <video  controls width="640" height="360" src={'/uploads/'+lessonDetail?.videoUrl}></video>
+                      <video  controls width="640" height="360" src={lessonDetail?.videoUrl}></video>
                     </CardContent>
                   </Card>
                   : ''}

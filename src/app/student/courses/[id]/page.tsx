@@ -95,7 +95,7 @@ export default function CoursePage({params}: CoursePageProps) {
                   <Card className="overflow-hidden border-none shadow-sm bg-white">
 
                     <Image
-                      src={`/uploads/${coursDetail?.image}`}
+                      src={`${coursDetail?.image}`}
                       alt="Course Banner"
                       width={800} // Largeur en pixels
                       height={300} // Hauteur en pixels

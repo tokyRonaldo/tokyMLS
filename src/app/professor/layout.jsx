@@ -132,10 +132,10 @@ export default function InstructorDashboardLayout({children}) {
                 <div className="bg-slate-800 rounded-lg p-3 mb-6">
                 <div className="flex items-center gap-3 mb-3">
                     <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-medium text-sm">
-                    JD
+                    {formateur?.username?.slice(0, 2).toUpperCase() || 'US'}
                     </div>
                     <div>
-                    <p className="font-medium text-sm">John Doe</p>
+                    <p className="font-medium text-sm"> {formateur?.username || 'USER'}</p>
                     <p className="text-xs text-slate-400">Instructor</p>
                     </div>
                 </div>
@@ -224,7 +224,7 @@ export default function InstructorDashboardLayout({children}) {
                         setShowDetail(!showDetail)
                     }}
                     >
-                        JD
+                        {formateur?.username?.slice(0, 2).toUpperCase() || 'US'}
                         {showDetail && 
                             <div className="detail-user" >
                                 <div className="user-name items-center border-slate-600 ">

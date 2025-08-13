@@ -207,7 +207,7 @@ export default function DashboardLayout({  children } ) {
                         setShowDetail(!showDetail)
                     }}
                     >
-                        JD
+                        {student?.username?.slice(0, 2).toUpperCase() || 'US'}
                         {showDetail && 
                             <div className="detail-user" >
                                 <div className="user-name border-slate-600 hover:bg-slate-700">

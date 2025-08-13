@@ -227,9 +227,9 @@ export default function InstructorDashboardLayout({children}) {
                         {formateur?.username?.slice(0, 2).toUpperCase() || 'US'}
                         {showDetail && 
                             <div className="detail-user" >
-                                <div className="user-name items-center border-slate-600 ">
+                                <div className="user-name items-center border-slate-600 p-1">
                                     
-                                    <p className="font-medium user-name-p mb-2 break-words border-slate-600 text-black">
+                                    <p className="font-medium user-name-p break-words border-slate-600 text-black">
                                         {formateur?.username || 'USER'}
                                     </p>
                                 </div>

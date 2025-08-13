@@ -210,9 +210,9 @@ export default function DashboardLayout({  children } ) {
                         {student?.username?.slice(0, 2).toUpperCase() || 'US'}
                         {showDetail && 
                             <div className="detail-user" >
-                                <div className="user-name border-slate-600 hover:bg-slate-700">
+                                <div className="user-name border-slate-600 hover:bg-slate-700 p-1">
                                     
-                                    <p className="font-medium text-sm mb-2 break-words text-black">
+                                    <p className="font-medium text-sm break-words text-black">
                                         {student?.username || 'USER'}
                                     </p>
                                 </div>
